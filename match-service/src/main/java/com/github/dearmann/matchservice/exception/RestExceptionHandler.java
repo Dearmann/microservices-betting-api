@@ -13,7 +13,7 @@ public class RestExceptionHandler {
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(BadPathVariableException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.NOT_FOUND.value())
+                .httpStatus(HttpStatus.NOT_FOUND.value())
                 .message(exception.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
@@ -24,7 +24,7 @@ public class RestExceptionHandler {
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(NumberFormatException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
+                .httpStatus(HttpStatus.BAD_REQUEST.value())
                 .message("Bad Request")
                 .timeStamp(LocalDateTime.now())
                 .build();
