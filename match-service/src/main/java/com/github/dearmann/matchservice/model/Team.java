@@ -19,10 +19,13 @@ public class Team {
 
     private String name;
 
-    @OneToMany(mappedBy = "team")
-    private List<Player> players;
-
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private Game game;
+
+    @OneToMany(mappedBy = "teamOne")
+    private List<Match> matchesAsTeamOne;
+
+    @OneToMany(mappedBy = "teamTwo")
+    private List<Match> matchesAsTeamTwo;
 }

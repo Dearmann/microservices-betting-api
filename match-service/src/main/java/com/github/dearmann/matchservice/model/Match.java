@@ -19,22 +19,25 @@ public class Match {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private Team teamOne;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private Team teamTwo;
-
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
-    private LocalDateTime startDate;
 
     private Boolean teamOneWon;
 
-    private Boolean teamTwoWon;
+    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
+    private LocalDateTime start;
 
-    @ManyToOne
-    @JoinColumn
+    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
+    private LocalDateTime estimatedEnd;
+
+    private Boolean matchOver;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private Event event;
 }

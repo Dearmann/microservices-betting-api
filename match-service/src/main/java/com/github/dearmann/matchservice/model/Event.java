@@ -23,16 +23,20 @@ public class Event {
 
     private String name;
 
+    private String region;
+
+    private int season;
+
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime start;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime end;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private Game game;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Match> matches;
 }
