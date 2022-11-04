@@ -1,5 +1,6 @@
 package com.github.dearmann.matchservice.service;
 
+import com.github.dearmann.matchservice.dto.DtoUtility;
 import com.github.dearmann.matchservice.dto.request.EventRequest;
 import com.github.dearmann.matchservice.dto.response.EventResponse;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
@@ -16,19 +17,19 @@ import java.util.Optional;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final GameService gameService;
+    private final DtoUtility dtoUtility;
 
     public EventResponse createEvent(EventRequest eventRequest) {
-        Event event = eventRequestToEvent(eventRequest);
+        Event event = dtoUtility.eventRequestToEvent(eventRequest, null);
         eventRepository.save(event);
 
-        return eventToEventResponse(event);
+        return dtoUtility.eventToEventResponse(event);
     }
 
     public List<EventResponse> getAllEvents() {
         return eventRepository.findAll()
                 .stream()
-                .map(this::eventToEventResponse)
+                .map(dtoUtility::eventToEventResponse)
                 .toList();
     }
 
@@ -38,7 +39,16 @@ public class EventService {
         if (event.isEmpty()) {
             throw new BadEntityIdException("Event not found ID - " + id);
         }
-        return eventToEventResponse(event.get());
+        return dtoUtility.eventToEventResponse(event.get());
+    }
+
+    public Event getEventEntityById(Long id) {
+        Optional<Event> event = eventRepository.findById(id);
+
+        if (event.isEmpty()) {
+            throw new BadEntityIdException("Event not found ID - " + id);
+        }
+        return event.get();
     }
 
     public EventResponse updateEvent(Long id, EventRequest updatedEventRequest) {
@@ -48,10 +58,10 @@ public class EventService {
             throw new BadEntityIdException("Event not found ID - " + id);
         }
 
-        Event updatedEvent = eventRequestToEvent(updatedEventRequest);
+        Event updatedEvent = dtoUtility.eventRequestToEvent(updatedEventRequest, id);
         eventRepository.save(updatedEvent);
 
-        return eventToEventResponse(updatedEvent);
+        return dtoUtility.eventToEventResponse(updatedEvent);
     }
 
     public void deleteEvent(Long id) {
@@ -61,28 +71,5 @@ public class EventService {
             throw new BadEntityIdException("Event not found ID - " + id);
         }
         eventRepository.delete(eventToDelete.get());
-    }
-
-    private Event eventRequestToEvent(EventRequest eventRequest) {
-        return Event.builder()
-                .name(eventRequest.getName())
-                .region(eventRequest.getRegion())
-                .season(eventRequest.getSeason())
-                .start(eventRequest.getStart())
-                .end(eventRequest.getEnd())
-                .game(gameService.getGameById(eventRequest.getGameId()))
-                .build();
-    }
-
-    private EventResponse eventToEventResponse(Event event) {
-        return EventResponse.builder()
-                .id(event.getId())
-                .name(event.getName())
-                .region(event.getRegion())
-                .season(event.getSeason())
-                .start(event.getStart())
-                .end(event.getEnd())
-                .gameId(event.getGame().getId())
-                .build();
     }
 }
