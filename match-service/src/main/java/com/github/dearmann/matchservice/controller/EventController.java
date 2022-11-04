@@ -1,5 +1,6 @@
 package com.github.dearmann.matchservice.controller;
 
+import com.github.dearmann.matchservice.dto.request.EventRequest;
 import com.github.dearmann.matchservice.model.Event;
 import com.github.dearmann.matchservice.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Event createEvent(@RequestBody Event event) {
-         return eventService.createEvent(event);
+    public Event createEvent(@RequestBody EventRequest eventRequest) {
+         return eventService.createEvent(eventRequest);
     }
 
     @GetMapping
@@ -32,8 +33,8 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public Event updateEvent(@PathVariable Long id, @RequestBody Event eventUpdated) {
-        return eventService.updateEvent(id, eventUpdated);
+    public Event updateEvent(@PathVariable Long id, @RequestBody EventRequest updatedEventRequest) {
+        return eventService.updateEvent(id, updatedEventRequest);
     }
 
     @DeleteMapping("/{id}")
