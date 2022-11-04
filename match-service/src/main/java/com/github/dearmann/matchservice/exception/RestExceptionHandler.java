@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class RestExceptionHandler {
 
     @ExceptionHandler
-    private ResponseEntity<ErrorResponse> handleException(BadPathVariableException exception) {
+    private ResponseEntity<ErrorResponse> handleException(BadEntityIdException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.NOT_FOUND.value())
                 .message(exception.getMessage())
