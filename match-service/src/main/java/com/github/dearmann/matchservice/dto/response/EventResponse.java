@@ -16,7 +16,7 @@ public class EventResponse {
     private Long id;
     private String name;
     private String region;
-    private int season;
+    private Integer season;
     private LocalDateTime start;
     private LocalDateTime end;
     private Long gameId;
