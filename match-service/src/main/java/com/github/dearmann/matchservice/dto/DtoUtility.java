@@ -14,12 +14,12 @@ import com.github.dearmann.matchservice.model.Match;
 import com.github.dearmann.matchservice.model.Team;
 import com.github.dearmann.matchservice.service.EventService;
 import com.github.dearmann.matchservice.service.GameService;
+import com.github.dearmann.matchservice.service.MatchService;
 import com.github.dearmann.matchservice.service.TeamService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class DtoUtility {
@@ -27,13 +27,16 @@ public class DtoUtility {
     private final EventService eventService;
     private final GameService gameService;
     private final TeamService teamService;
+    private final MatchService matchService;
 
     public DtoUtility(@Lazy EventService eventService,
                       @Lazy GameService gameService,
-                      @Lazy TeamService teamService) {
+                      @Lazy TeamService teamService,
+                      @Lazy MatchService matchService) {
         this.eventService = eventService;
         this.gameService = gameService;
         this.teamService = teamService;
+        this.matchService = matchService;
     }
 
     public Event eventRequestToEvent(EventRequest eventRequest, Long id) {
@@ -57,11 +60,17 @@ public class DtoUtility {
                 .start(event.getStart())
                 .end(event.getEnd())
                 .gameId(event.getGame().getId())
-                .teamIds(teamService.getAllTeamsByEventId(event.getId())
-                        .stream()
-                        .map(TeamResponse::getId)
-                        .toList())
+                .teamIds(getAllTeamIdsByEventId(event.getId()))
                 .build();
+    }
+
+    public List<Long> getAllTeamIdsByEventId(Long eventId) {
+        Set<Long> teamIdSet = new HashSet<>();
+        for (MatchResponse matchResponse : matchService.getAllMatchesFromEventId(eventId)) {
+            teamIdSet.add(matchResponse.getTeam1().getId());
+            teamIdSet.add(matchResponse.getTeam2().getId());
+        }
+        return teamIdSet.stream().toList();
     }
 
     public Game gameRequestToGame(GameRequest gameRequest, Long id) {
@@ -75,15 +84,15 @@ public class DtoUtility {
         return GameResponse.builder()
                 .id(game.getId())
                 .name(game.getName())
-                .events(Optional.ofNullable(game.getEvents())
+                .eventIds(Optional.ofNullable(game.getEvents())
                         .orElse(Collections.emptyList())
                         .stream()
-                        .map(this::eventToEventResponse)
+                        .map(Event::getId)
                         .toList())
-                .teams(Optional.ofNullable(game.getTeams())
+                .teamIds(Optional.ofNullable(game.getTeams())
                         .orElse(Collections.emptyList())
                         .stream()
-                        .map(this::teamToTeamResponse)
+                        .map(Team::getId)
                         .toList())
                 .build();
     }

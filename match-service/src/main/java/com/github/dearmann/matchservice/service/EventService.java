@@ -7,6 +7,7 @@ import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Event;
 import com.github.dearmann.matchservice.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class EventService {
         Optional<Event> event = eventRepository.findById(id);
 
         if (event.isEmpty()) {
-            throw new BadEntityIdException("Event not found ID - " + id);
+            throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return dtoUtility.eventToEventResponse(event.get());
     }
@@ -46,7 +47,7 @@ public class EventService {
         Optional<Event> event = eventRepository.findById(id);
 
         if (event.isEmpty()) {
-            throw new BadEntityIdException("Event not found ID - " + id);
+            throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return event.get();
     }
@@ -55,7 +56,7 @@ public class EventService {
         Optional<Event> eventById = eventRepository.findById(id);
 
         if (eventById.isEmpty()) {
-            throw new BadEntityIdException("Event not found ID - " + id);
+            throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
         Event updatedEvent = dtoUtility.eventRequestToEvent(updatedEventRequest, id);
@@ -68,7 +69,7 @@ public class EventService {
         Optional<Event> eventToDelete = eventRepository.findById(id);
 
         if (eventToDelete.isEmpty()) {
-            throw new BadEntityIdException("Event not found ID - " + id);
+            throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         eventRepository.delete(eventToDelete.get());
     }

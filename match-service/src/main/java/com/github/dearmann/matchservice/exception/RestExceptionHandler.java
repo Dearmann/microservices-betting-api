@@ -13,12 +13,12 @@ public class RestExceptionHandler {
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(BadEntityIdException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .httpStatus(HttpStatus.NOT_FOUND.value())
+                .httpStatus(exception.getHttpStatus().value())
                 .message(exception.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
     }
 
     @ExceptionHandler

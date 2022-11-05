@@ -7,6 +7,7 @@ import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Game;
 import com.github.dearmann.matchservice.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class GameService {
         Optional<Game> game = gameRepository.findById(id);
 
         if (game.isEmpty()) {
-            throw new BadEntityIdException("Game not found ID - " + id);
+            throw new BadEntityIdException("Game not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return dtoUtility.gameToGameResponse(game.get());
     }
@@ -46,7 +47,7 @@ public class GameService {
         Optional<Game> game = gameRepository.findById(id);
 
         if (game.isEmpty()) {
-            throw new BadEntityIdException("Game not found ID - " + id);
+            throw new BadEntityIdException("Game not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return game.get();
     }
@@ -55,7 +56,7 @@ public class GameService {
         Optional<Game> gameById = gameRepository.findById(id);
 
         if (gameById.isEmpty()) {
-            throw new BadEntityIdException("Game not found ID - " + id);
+            throw new BadEntityIdException("Game not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
         Game updatedGame = dtoUtility.gameRequestToGame(updatedGameRequest, id);
@@ -68,7 +69,7 @@ public class GameService {
         Optional<Game> gameToDelete = gameRepository.findById(id);
 
         if (gameToDelete.isEmpty()) {
-            throw new BadEntityIdException("Game not found ID - " + id);
+            throw new BadEntityIdException("Game not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         gameRepository.delete(gameToDelete.get());
     }

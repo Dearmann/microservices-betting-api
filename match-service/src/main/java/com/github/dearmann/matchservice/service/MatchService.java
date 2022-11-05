@@ -2,14 +2,18 @@ package com.github.dearmann.matchservice.service;
 
 import com.github.dearmann.matchservice.dto.DtoUtility;
 import com.github.dearmann.matchservice.dto.request.MatchRequest;
+import com.github.dearmann.matchservice.dto.response.EventResponse;
 import com.github.dearmann.matchservice.dto.response.MatchResponse;
+import com.github.dearmann.matchservice.dto.response.TeamResponse;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Match;
 import com.github.dearmann.matchservice.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,9 +22,23 @@ public class MatchService {
 
     private final MatchRepository matchRepository;
     private final EventService eventService;
+    private final TeamService teamService;
     private final DtoUtility dtoUtility;
 
     public MatchResponse createMatch(MatchRequest matchRequest) {
+        TeamResponse teamResponse1 = teamService.getTeamById(matchRequest.getTeam1Id());
+        TeamResponse teamResponse2 = teamService.getTeamById(matchRequest.getTeam2Id());
+        EventResponse eventResponse = eventService.getEventById(matchRequest.getEventId());
+
+        if (!Objects.equals(eventResponse.getGameId(), teamResponse1.getGameId())) {
+            throw new BadEntityIdException(teamResponse1.getName() + " cannot be added to " + eventResponse.getName() + ", because they are in different games",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (!Objects.equals(eventResponse.getGameId(), teamResponse2.getGameId())) {
+            throw new BadEntityIdException(teamResponse2.getName() + " cannot be added to " + eventResponse.getName() + ", because they are in different games",
+                    HttpStatus.BAD_REQUEST);
+        }
+
         Match match = dtoUtility.matchRequestToMatch(matchRequest, null);
         matchRepository.save(match);
 
@@ -38,7 +56,7 @@ public class MatchService {
         Optional<Match> match = matchRepository.findById(id);
 
         if (match.isEmpty()) {
-            throw new BadEntityIdException("Match not found ID - " + id);
+            throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return dtoUtility.matchToMatchResponse(match.get());
     }
@@ -54,7 +72,7 @@ public class MatchService {
         Optional<Match> matchById = matchRepository.findById(id);
 
         if (matchById.isEmpty()) {
-            throw new BadEntityIdException("Match not found ID - " + id);
+            throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
         Match updatedMatch = dtoUtility.matchRequestToMatch(updatedMatchRequest, id);
@@ -67,7 +85,7 @@ public class MatchService {
         Optional<Match> matchToDelete = matchRepository.findById(id);
 
         if (matchToDelete.isEmpty()) {
-            throw new BadEntityIdException("Match not found ID - " + id);
+            throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         matchRepository.delete(matchToDelete.get());
     }
