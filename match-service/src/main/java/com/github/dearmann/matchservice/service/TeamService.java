@@ -2,6 +2,7 @@ package com.github.dearmann.matchservice.service;
 
 import com.github.dearmann.matchservice.dto.DtoUtility;
 import com.github.dearmann.matchservice.dto.request.TeamRequest;
+import com.github.dearmann.matchservice.dto.response.MatchResponse;
 import com.github.dearmann.matchservice.dto.response.TeamResponse;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Team;
@@ -9,14 +10,17 @@ import com.github.dearmann.matchservice.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final MatchService matchService;
     private final DtoUtility dtoUtility;
 
     public TeamResponse createTeam(TeamRequest teamRequest) {
@@ -49,6 +53,15 @@ public class TeamService {
             throw new BadEntityIdException("Team not found ID - " + id);
         }
         return team.get();
+    }
+
+    public List<TeamResponse> getAllTeamsByEventId(Long eventId) {
+        Set<TeamResponse> teamResponseSet = new HashSet<>();
+        for (MatchResponse matchResponse : matchService.getAllMatchesFromEventId(eventId)) {
+            teamResponseSet.add(matchResponse.getTeam1());
+            teamResponseSet.add(matchResponse.getTeam2());
+        }
+        return teamResponseSet.stream().toList();
     }
 
     public TeamResponse updateTeam(Long id, TeamRequest updatedTeamRequest) {

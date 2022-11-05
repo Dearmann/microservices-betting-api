@@ -57,6 +57,10 @@ public class DtoUtility {
                 .start(event.getStart())
                 .end(event.getEnd())
                 .gameId(event.getGame().getId())
+                .teamIds(teamService.getAllTeamsByEventId(event.getId())
+                        .stream()
+                        .map(TeamResponse::getId)
+                        .toList())
                 .build();
     }
 
