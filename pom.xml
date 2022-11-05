@@ -9,6 +9,7 @@
         <module>bet-service</module>
         <module>comment-service</module>
         <module>rate-service</module>
+        <module>user-service</module>
     </modules>
 
     <parent>
