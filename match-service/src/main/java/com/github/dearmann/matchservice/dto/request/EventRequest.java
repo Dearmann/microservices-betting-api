@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class EventRequest {
     private String name;
     private String region;
-    private int season;
+    private Integer season;
     private LocalDateTime start;
     private LocalDateTime end;
     private Long gameId;

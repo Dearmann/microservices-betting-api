@@ -52,7 +52,7 @@ public class EventService {
         return event.get();
     }
 
-    public EventResponse updateEvent(Long id, EventRequest updatedEventRequest) {
+    public EventResponse updateEvent(EventRequest updatedEventRequest, Long id) {
         Optional<Event> eventById = eventRepository.findById(id);
 
         if (eventById.isEmpty()) {
@@ -60,6 +60,9 @@ public class EventService {
         }
 
         Event updatedEvent = dtoUtility.eventRequestToEvent(updatedEventRequest, id);
+
+        // Can't edit game of an event
+        updatedEvent.setGame(eventById.get().getGame());
         eventRepository.save(updatedEvent);
 
         return dtoUtility.eventToEventResponse(updatedEvent);

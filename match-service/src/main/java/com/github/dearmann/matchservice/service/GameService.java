@@ -52,7 +52,7 @@ public class GameService {
         return game.get();
     }
 
-    public GameResponse updateGame(Long id, GameRequest updatedGameRequest) {
+    public GameResponse updateGame(GameRequest updatedGameRequest, Long id) {
         Optional<Game> gameById = gameRepository.findById(id);
 
         if (gameById.isEmpty()) {

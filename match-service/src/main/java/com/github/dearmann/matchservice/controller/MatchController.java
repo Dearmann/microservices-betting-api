@@ -38,8 +38,8 @@ public class MatchController {
     }
 
     @PutMapping("/{id}")
-    public MatchResponse updateMatch(@PathVariable Long id, @RequestBody MatchRequest updatedMatchRequest) {
-        return matchService.updateMatch(id, updatedMatchRequest);
+    public MatchResponse updateMatch(@RequestBody MatchRequest updatedMatchRequest, @PathVariable Long id) {
+        return matchService.updateMatch(updatedMatchRequest, id);
     }
 
     @DeleteMapping("/{id}")
