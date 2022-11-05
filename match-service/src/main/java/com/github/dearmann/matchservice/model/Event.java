@@ -30,7 +30,7 @@ public class Event {
 
     private String region;
 
-    private int season;
+    private Integer season;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime start;
