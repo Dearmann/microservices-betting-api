@@ -60,6 +60,9 @@ public class BetService {
         }
 
         Bet updatedBet = dtoUtility.betRequestToBet(updatedBetRequest, id);
+        // Can't edit user or match of a bet
+        updatedBet.setUserId(betById.get().getUserId());
+        updatedBet.setMatchId(betById.get().getMatchId());
         betRepository.save(updatedBet);
 
         return dtoUtility.betToBetResponse(updatedBet);
