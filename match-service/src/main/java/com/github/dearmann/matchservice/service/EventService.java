@@ -21,7 +21,7 @@ public class EventService {
     private final DtoUtility dtoUtility;
 
     public EventResponse createEvent(EventRequest eventRequest) {
-        Event event = dtoUtility.eventRequestToEvent(eventRequest, null);
+        Event event = dtoUtility.eventRequestToEvent(eventRequest, 0L);
         eventRepository.save(event);
 
         return dtoUtility.eventToEventResponse(event);

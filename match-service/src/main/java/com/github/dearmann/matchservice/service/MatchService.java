@@ -39,7 +39,7 @@ public class MatchService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        Match match = dtoUtility.matchRequestToMatch(matchRequest, null);
+        Match match = dtoUtility.matchRequestToMatch(matchRequest, 0L);
         matchRepository.save(match);
 
         return dtoUtility.matchToMatchResponse(match);

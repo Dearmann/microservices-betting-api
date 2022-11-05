@@ -21,7 +21,7 @@ public class TeamService {
     private final DtoUtility dtoUtility;
 
     public TeamResponse createTeam(TeamRequest teamRequest) {
-        Team team = dtoUtility.teamRequestToTeam(teamRequest, null);
+        Team team = dtoUtility.teamRequestToTeam(teamRequest, 0L);
         teamRepository.save(team);
 
         return dtoUtility.teamToTeamResponse(team);

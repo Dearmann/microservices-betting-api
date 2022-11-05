@@ -21,7 +21,7 @@ public class GameService {
     private final DtoUtility dtoUtility;
 
     public GameResponse createGame(GameRequest gameRequest) {
-        Game game = dtoUtility.gameRequestToGame(gameRequest, null);
+        Game game = dtoUtility.gameRequestToGame(gameRequest, 0L);
         gameRepository.save(game);
 
         return dtoUtility.gameToGameResponse(game);
