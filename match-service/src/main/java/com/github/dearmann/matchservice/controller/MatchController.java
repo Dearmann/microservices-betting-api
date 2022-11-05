@@ -32,6 +32,11 @@ public class MatchController {
         return matchService.getMatchById(id);
     }
 
+    @GetMapping("/by-event/{eventId}")
+    public List<MatchResponse> getAllMatchesFromEvent(@PathVariable Long eventId) {
+        return matchService.getAllMatchesFromEventId(eventId);
+    }
+
     @PutMapping("/{id}")
     public MatchResponse updateMatch(@PathVariable Long id, @RequestBody MatchRequest updatedMatchRequest) {
         return matchService.updateMatch(id, updatedMatchRequest);

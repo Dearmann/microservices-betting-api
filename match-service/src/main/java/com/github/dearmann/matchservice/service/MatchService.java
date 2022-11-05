@@ -17,6 +17,7 @@ import java.util.Optional;
 public class MatchService {
 
     private final MatchRepository matchRepository;
+    private final EventService eventService;
     private final DtoUtility dtoUtility;
 
     public MatchResponse createMatch(MatchRequest matchRequest) {
@@ -40,6 +41,13 @@ public class MatchService {
             throw new BadEntityIdException("Match not found ID - " + id);
         }
         return dtoUtility.matchToMatchResponse(match.get());
+    }
+
+    public List<MatchResponse> getAllMatchesFromEventId(Long eventId) {
+        return matchRepository.findByEvent(eventService.getEventEntityById(eventId))
+                .stream()
+                .map(dtoUtility::matchToMatchResponse)
+                .toList();
     }
 
     public MatchResponse updateMatch(Long id, MatchRequest updatedMatchRequest) {
