@@ -38,7 +38,7 @@ public class Event {
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime end;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(nullable = false)
     private Game game;
 

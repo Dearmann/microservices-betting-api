@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MatchResponse {
     private Long id;
-    private TeamResponse teamOne;
-    private TeamResponse teamTwo;
-    private Boolean teamOneWon;
+    private TeamResponse team1;
+    private TeamResponse team2;
+    private Boolean team1Won;
     private LocalDateTime start;
     private LocalDateTime estimatedEnd;
     private Boolean matchOver;

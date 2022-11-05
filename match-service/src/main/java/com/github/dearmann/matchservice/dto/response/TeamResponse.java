@@ -15,6 +15,6 @@ public class TeamResponse {
     private Long id;
     private String name;
     private Long gameId;
-    private List<Long> matchesAsTeamOne;
-    private List<Long> matchesAsTeamTwo;
+    private List<Long> matchesAsTeam1;
+    private List<Long> matchesAsTeam2;
 }

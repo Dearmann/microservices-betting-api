@@ -26,13 +26,13 @@ public class Team {
 
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(nullable = false)
     private Game game;
 
-    @OneToMany(mappedBy = "teamOne")
-    private List<Match> matchesAsTeamOne;
+    @OneToMany(mappedBy = "team1", cascade = CascadeType.ALL)
+    private List<Match> matchesAsTeam1;
 
-    @OneToMany(mappedBy = "teamTwo")
-    private List<Match> matchesAsTeamTwo;
+    @OneToMany(mappedBy = "team2", cascade = CascadeType.ALL)
+    private List<Match> matchesAsTeam2;
 }

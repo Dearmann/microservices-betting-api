@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MatchRequest {
-    private Long teamOneId;
-    private Long teamTwoId;
-    private Boolean teamOneWon;
+    private Long team1Id;
+    private Long team2Id;
+    private Boolean team1Won;
     private LocalDateTime start;
     private LocalDateTime estimatedEnd;
     private Boolean matchOver;
