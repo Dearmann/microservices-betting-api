@@ -14,6 +14,6 @@ import java.util.List;
 public class GameResponse {
     private Long id;
     private String name;
-    private List<EventResponse> events;
-    private List<TeamResponse> teams;
+    private List<Long> eventIds;
+    private List<Long> teamIds;
 }
