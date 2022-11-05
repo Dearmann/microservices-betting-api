@@ -6,6 +6,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>match-service</module>
+        <module>bet-service</module>
+        <module>comment-service</module>
+        <module>rate-service</module>
     </modules>
 
     <parent>
