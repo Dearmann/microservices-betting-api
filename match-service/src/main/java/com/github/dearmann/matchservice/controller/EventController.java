@@ -2,7 +2,6 @@ package com.github.dearmann.matchservice.controller;
 
 import com.github.dearmann.matchservice.dto.request.EventRequest;
 import com.github.dearmann.matchservice.dto.response.EventResponse;
-import com.github.dearmann.matchservice.model.Event;
 import com.github.dearmann.matchservice.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,8 +33,8 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public EventResponse updateEvent(@PathVariable Long id, @RequestBody EventRequest updatedEventRequest) {
-        return eventService.updateEvent(id, updatedEventRequest);
+    public EventResponse updateEvent(@RequestBody EventRequest updatedEventRequest, @PathVariable Long id) {
+        return eventService.updateEvent(updatedEventRequest, id);
     }
 
     @DeleteMapping("/{id}")

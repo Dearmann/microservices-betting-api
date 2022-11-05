@@ -33,8 +33,8 @@ public class TeamController {
     }
 
     @PutMapping("/{id}")
-    public TeamResponse updateTeam(@PathVariable Long id, @RequestBody TeamRequest updatedTeamRequest) {
-        return teamService.updateTeam(id, updatedTeamRequest);
+    public TeamResponse updateTeam(@RequestBody TeamRequest updatedTeamRequest, @PathVariable Long id) {
+        return teamService.updateTeam(updatedTeamRequest, id);
     }
 
     @DeleteMapping("/{id}")

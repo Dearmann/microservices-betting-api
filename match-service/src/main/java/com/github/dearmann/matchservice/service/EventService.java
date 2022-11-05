@@ -52,7 +52,7 @@ public class EventService {
         return event.get();
     }
 
-    public EventResponse updateEvent(Long id, EventRequest updatedEventRequest) {
+    public EventResponse updateEvent(EventRequest updatedEventRequest, Long id) {
         Optional<Event> eventById = eventRepository.findById(id);
 
         if (eventById.isEmpty()) {

@@ -68,7 +68,7 @@ public class MatchService {
                 .toList();
     }
 
-    public MatchResponse updateMatch(Long id, MatchRequest updatedMatchRequest) {
+    public MatchResponse updateMatch(MatchRequest updatedMatchRequest, Long id) {
         Optional<Match> matchById = matchRepository.findById(id);
 
         if (matchById.isEmpty()) {

@@ -52,7 +52,7 @@ public class TeamService {
         return team.get();
     }
 
-    public TeamResponse updateTeam(Long id, TeamRequest updatedTeamRequest) {
+    public TeamResponse updateTeam(TeamRequest updatedTeamRequest, Long id) {
         Optional<Team> teamById = teamRepository.findById(id);
 
         if (teamById.isEmpty()) {
