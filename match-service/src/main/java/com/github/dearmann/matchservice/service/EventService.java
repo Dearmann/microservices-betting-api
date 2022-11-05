@@ -60,6 +60,9 @@ public class EventService {
         }
 
         Event updatedEvent = dtoUtility.eventRequestToEvent(updatedEventRequest, id);
+
+        // Can't edit game of an event
+        updatedEvent.setGame(eventById.get().getGame());
         eventRepository.save(updatedEvent);
 
         return dtoUtility.eventToEventResponse(updatedEvent);

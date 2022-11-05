@@ -76,6 +76,11 @@ public class MatchService {
         }
 
         Match updatedMatch = dtoUtility.matchRequestToMatch(updatedMatchRequest, id);
+
+        // Can't edit teams or event of a match
+        updatedMatch.setTeam1(matchById.get().getTeam1());
+        updatedMatch.setTeam2(matchById.get().getTeam2());
+        updatedMatch.setEvent(matchById.get().getEvent());
         matchRepository.save(updatedMatch);
 
         return dtoUtility.matchToMatchResponse(updatedMatch);

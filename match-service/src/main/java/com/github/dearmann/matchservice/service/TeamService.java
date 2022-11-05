@@ -60,6 +60,9 @@ public class TeamService {
         }
 
         Team updatedTeam = dtoUtility.teamRequestToTeam(updatedTeamRequest, id);
+
+        // Can't edit game of a team
+        updatedTeam.setGame(teamById.get().getGame());
         teamRepository.save(updatedTeam);
 
         return dtoUtility.teamToTeamResponse(updatedTeam);
