@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public class UserService {
 
     public UserResponse createUser(UserRequest userRequest) {
         User user = dtoUtility.userRequestToUser(userRequest, 0L);
-        user.setCreatedAt(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         user = userRepository.save(user);
 
         return dtoUtility.userToUserResponse(user);
