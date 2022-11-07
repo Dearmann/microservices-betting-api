@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -36,10 +35,8 @@ public class Match {
 
     private Boolean team1Won;
 
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime start;
 
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime estimatedEnd;
 
     private Boolean matchOver;
