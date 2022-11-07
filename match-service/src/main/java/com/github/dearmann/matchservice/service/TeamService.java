@@ -22,7 +22,7 @@ public class TeamService {
 
     public TeamResponse createTeam(TeamRequest teamRequest) {
         Team team = dtoUtility.teamRequestToTeam(teamRequest, 0L);
-        teamRepository.save(team);
+        team = teamRepository.save(team);
 
         return dtoUtility.teamToTeamResponse(team);
     }
@@ -63,7 +63,7 @@ public class TeamService {
 
         // Can't edit game of a team
         updatedTeam.setGame(teamById.get().getGame());
-        teamRepository.save(updatedTeam);
+        updatedTeam = teamRepository.save(updatedTeam);
 
         return dtoUtility.teamToTeamResponse(updatedTeam);
     }

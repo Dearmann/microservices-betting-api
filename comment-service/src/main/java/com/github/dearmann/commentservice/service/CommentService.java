@@ -22,7 +22,7 @@ public class CommentService {
 
     public CommentResponse createComment(CommentRequest commentRequest) {
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
-        commentRepository.save(comment);
+        comment = commentRepository.save(comment);
 
         return dtoUtility.commentToCommentResponse(comment);
     }
@@ -64,7 +64,7 @@ public class CommentService {
         // Can't edit user or match of a comment
         updatedComment.setUserId(commentById.get().getUserId());
         updatedComment.setMatchId(commentById.get().getMatchId());
-        commentRepository.save(updatedComment);
+        updatedComment = commentRepository.save(updatedComment);
 
         return dtoUtility.commentToCommentResponse(updatedComment);
     }

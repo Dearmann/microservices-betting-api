@@ -40,7 +40,7 @@ public class MatchService {
         }
 
         Match match = dtoUtility.matchRequestToMatch(matchRequest, 0L);
-        matchRepository.save(match);
+        match = matchRepository.save(match);
 
         return dtoUtility.matchToMatchResponse(match);
     }
@@ -81,7 +81,7 @@ public class MatchService {
         updatedMatch.setTeam1(matchById.get().getTeam1());
         updatedMatch.setTeam2(matchById.get().getTeam2());
         updatedMatch.setEvent(matchById.get().getEvent());
-        matchRepository.save(updatedMatch);
+        updatedMatch = matchRepository.save(updatedMatch);
 
         return dtoUtility.matchToMatchResponse(updatedMatch);
     }

@@ -22,7 +22,7 @@ public class RatingService {
 
     public RatingResponse createRating(RatingRequest ratingRequest) {
         Rating rating = dtoUtility.ratingRequestToRating(ratingRequest, 0L);
-        ratingRepository.save(rating);
+        rating = ratingRepository.save(rating);
 
         return dtoUtility.ratingToRatingResponse(rating);
     }
@@ -64,7 +64,7 @@ public class RatingService {
         // Can't edit user or match of a rating
         updatedRating.setUserId(ratingById.get().getUserId());
         updatedRating.setMatchId(ratingById.get().getMatchId());
-        ratingRepository.save(updatedRating);
+        updatedRating = ratingRepository.save(updatedRating);
 
         return dtoUtility.ratingToRatingResponse(updatedRating);
     }

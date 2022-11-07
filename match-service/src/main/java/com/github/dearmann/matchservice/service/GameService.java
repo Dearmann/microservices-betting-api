@@ -22,7 +22,7 @@ public class GameService {
 
     public GameResponse createGame(GameRequest gameRequest) {
         Game game = dtoUtility.gameRequestToGame(gameRequest, 0L);
-        gameRepository.save(game);
+        game = gameRepository.save(game);
 
         return dtoUtility.gameToGameResponse(game);
     }
@@ -60,7 +60,7 @@ public class GameService {
         }
 
         Game updatedGame = dtoUtility.gameRequestToGame(updatedGameRequest, id);
-        gameRepository.save(updatedGame);
+        updatedGame = gameRepository.save(updatedGame);
 
         return dtoUtility.gameToGameResponse(updatedGame);
     }

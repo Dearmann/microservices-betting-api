@@ -22,7 +22,7 @@ public class BetService {
 
     public BetResponse createBet(BetRequest betRequest) {
         Bet bet = dtoUtility.betRequestToBet(betRequest, 0L);
-        betRepository.save(bet);
+        bet = betRepository.save(bet);
 
         return dtoUtility.betToBetResponse(bet);
     }
@@ -63,7 +63,7 @@ public class BetService {
         // Can't edit user or match of a bet
         updatedBet.setUserId(betById.get().getUserId());
         updatedBet.setMatchId(betById.get().getMatchId());
-        betRepository.save(updatedBet);
+        updatedBet = betRepository.save(updatedBet);
 
         return dtoUtility.betToBetResponse(updatedBet);
     }

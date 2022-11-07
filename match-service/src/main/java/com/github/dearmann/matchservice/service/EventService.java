@@ -22,7 +22,7 @@ public class EventService {
 
     public EventResponse createEvent(EventRequest eventRequest) {
         Event event = dtoUtility.eventRequestToEvent(eventRequest, 0L);
-        eventRepository.save(event);
+        event = eventRepository.save(event);
 
         return dtoUtility.eventToEventResponse(event);
     }
@@ -63,7 +63,7 @@ public class EventService {
 
         // Can't edit game of an event
         updatedEvent.setGame(eventById.get().getGame());
-        eventRepository.save(updatedEvent);
+        updatedEvent = eventRepository.save(updatedEvent);
 
         return dtoUtility.eventToEventResponse(updatedEvent);
     }
