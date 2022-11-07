@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,8 +28,6 @@ public class User {
     private String username;
     private String password;
     private String email;
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime createdAt;
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime lastLogin;
 }
