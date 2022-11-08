@@ -1,15 +1,20 @@
 package com.github.dearmann.betservice;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseTest {
-    @Container
-    static final MySQLContainer mySQLContainer = new MySQLContainer("mysql:8.0.31");
+
+    static final MySQLContainer mySQLContainer = new MySQLContainer("mysql:8.0.31");;
+
+    static {
+        mySQLContainer.start();
+    }
 
     @DynamicPropertySource
     static void setMySQLContainerProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
