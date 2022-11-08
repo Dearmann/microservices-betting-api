@@ -52,7 +52,7 @@ public class CommentService {
         return comment.get();
     }
 
-    public CommentResponse updateComment(Long id, CommentRequest updatedCommentRequest) {
+    public CommentResponse updateComment(CommentRequest updatedCommentRequest, Long id) {
         Optional<Comment> commentById = commentRepository.findById(id);
 
         if (commentById.isEmpty()) {

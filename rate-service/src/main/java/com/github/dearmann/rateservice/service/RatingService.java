@@ -52,7 +52,7 @@ public class RatingService {
         return rating.get();
     }
 
-    public RatingResponse updateRating(Long id, RatingRequest updatedRatingRequest) {
+    public RatingResponse updateRating(RatingRequest updatedRatingRequest, Long id) {
         Optional<Rating> ratingById = ratingRepository.findById(id);
 
         if (ratingById.isEmpty()) {

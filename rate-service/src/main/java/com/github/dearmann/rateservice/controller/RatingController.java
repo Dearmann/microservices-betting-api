@@ -33,8 +33,8 @@ public class RatingController {
     }
 
     @PutMapping("/{id}")
-    public RatingResponse updateRating(@PathVariable Long id, @RequestBody RatingRequest updatedRatingRequest) {
-        return ratingService.updateRating(id, updatedRatingRequest);
+    public RatingResponse updateRating(@RequestBody RatingRequest updatedRatingRequest, @PathVariable Long id) {
+        return ratingService.updateRating(updatedRatingRequest, id);
     }
 
     @DeleteMapping("/{id}")

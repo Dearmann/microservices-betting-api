@@ -52,7 +52,7 @@ public class BetService {
         return bet.get();
     }
 
-    public BetResponse updateBet(Long id, BetRequest updatedBetRequest) {
+    public BetResponse updateBet(BetRequest updatedBetRequest, Long id) {
         Optional<Bet> betById = betRepository.findById(id);
 
         if (betById.isEmpty()) {

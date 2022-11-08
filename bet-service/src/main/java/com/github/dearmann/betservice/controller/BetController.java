@@ -33,8 +33,8 @@ public class BetController {
     }
 
     @PutMapping("/{id}")
-    public BetResponse updateBet(@PathVariable Long id, @RequestBody BetRequest updatedBetRequest) {
-        return betService.updateBet(id, updatedBetRequest);
+    public BetResponse updateBet(@RequestBody BetRequest updatedBetRequest, @PathVariable Long id) {
+        return betService.updateBet(updatedBetRequest, id);
     }
 
     @DeleteMapping("/{id}")

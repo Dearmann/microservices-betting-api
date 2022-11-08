@@ -55,7 +55,7 @@ public class UserService {
         return user.get();
     }
 
-    public UserResponse updateUser(Long id, UserRequest updatedUserRequest) {
+    public UserResponse updateUser(UserRequest updatedUserRequest, Long id) {
         Optional<User> userById = userRepository.findById(id);
 
         if (userById.isEmpty()) {
