@@ -20,4 +20,8 @@ public class MatchResponse {
     private LocalDateTime estimatedEnd;
     private Boolean matchOver;
     private Long eventId;
+    private Double averageRating;
+    private Integer totalBets;
+    private Integer team1Bets;
+    private Integer team2Bets;
 }
