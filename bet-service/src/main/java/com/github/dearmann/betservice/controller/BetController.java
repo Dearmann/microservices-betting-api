@@ -52,4 +52,14 @@ public class BetController {
         betService.deleteBet(id);
     }
 
+    @DeleteMapping("/by-userid/{userId}")
+    public void deleteBetsByUserId(@PathVariable Long userId) {
+        betService.deleteBetsByUserId(userId);
+    }
+
+    @DeleteMapping("/by-matchid/{matchId}")
+    public void deleteBetsByMatchId(@PathVariable Long matchId) {
+        betService.deleteBetsByMatchId(matchId);
+    }
+
 }

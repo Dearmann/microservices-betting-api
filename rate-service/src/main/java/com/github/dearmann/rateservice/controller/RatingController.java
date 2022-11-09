@@ -52,4 +52,14 @@ public class RatingController {
         ratingService.deleteRating(id);
     }
 
+    @DeleteMapping("/by-userid/{userId}")
+    public void deleteRatingsByUserId(@PathVariable Long userId) {
+        ratingService.deleteRatingsByUserId(userId);
+    }
+
+    @DeleteMapping("/by-matchid/{matchId}")
+    public void deleteRatingsByMatchId(@PathVariable Long matchId) {
+        ratingService.deleteRatingsByMatchId(matchId);
+    }
+
 }

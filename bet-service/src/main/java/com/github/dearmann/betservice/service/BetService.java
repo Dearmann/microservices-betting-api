@@ -92,4 +92,14 @@ public class BetService {
         }
         betRepository.delete(betToDelete.get());
     }
+
+    public void deleteBetsByUserId(Long userId) {
+        List<Bet> betsByUserId = betRepository.findByUserId(userId);
+        betRepository.deleteAll(betsByUserId);
+    }
+
+    public void deleteBetsByMatchId(Long matchId) {
+        List<Bet> betsByMatchId = betRepository.findByMatchId(matchId);
+        betRepository.deleteAll(betsByMatchId);
+    }
 }

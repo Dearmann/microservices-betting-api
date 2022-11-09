@@ -93,4 +93,14 @@ public class RatingService {
         }
         ratingRepository.delete(ratingToDelete.get());
     }
+
+    public void deleteRatingsByUserId(Long userId) {
+        List<Rating> ratingsByUserId = ratingRepository.findByUserId(userId);
+        ratingRepository.deleteAll(ratingsByUserId);
+    }
+
+    public void deleteRatingsByMatchId(Long matchId) {
+        List<Rating> ratingsByMatchId = ratingRepository.findByMatchId(matchId);
+        ratingRepository.deleteAll(ratingsByMatchId);
+    }
 }

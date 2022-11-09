@@ -119,6 +119,23 @@ public class MatchService {
         if (matchToDelete.isEmpty()) {
             throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+
+        webClient.delete()
+                .uri("http://localhost:8082/bets/by-matchid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        webClient.delete()
+                .uri("http://localhost:8083/comments/by-matchid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        webClient.delete()
+                .uri("http://localhost:8084/ratings/by-matchid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+
         matchRepository.delete(matchToDelete.get());
     }
 }

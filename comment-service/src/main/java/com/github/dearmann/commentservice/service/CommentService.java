@@ -93,4 +93,14 @@ public class CommentService {
         }
         commentRepository.delete(commentToDelete.get());
     }
+
+    public void deleteCommentsByUserId(Long userId) {
+        List<Comment> commentsByUserId = commentRepository.findByUserId(userId);
+        commentRepository.deleteAll(commentsByUserId);
+    }
+
+    public void deleteCommentsByMatchId(Long matchId) {
+        List<Comment> commentsByMatchId = commentRepository.findByMatchId(matchId);
+        commentRepository.deleteAll(commentsByMatchId);
+    }
 }

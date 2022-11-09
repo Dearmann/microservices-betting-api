@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final DtoUtility dtoUtility;
+    private final WebClient webClient;
 
     public UserResponse createUser(UserRequest userRequest) {
         User user = dtoUtility.userRequestToUser(userRequest, 0L);
@@ -79,6 +81,23 @@ public class UserService {
         if (userToDelete.isEmpty()) {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+
+        webClient.delete()
+                .uri("http://localhost:8082/bets/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        webClient.delete()
+                .uri("http://localhost:8083/comments/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        webClient.delete()
+                .uri("http://localhost:8084/ratings/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+
         userRepository.delete(userToDelete.get());
     }
 }

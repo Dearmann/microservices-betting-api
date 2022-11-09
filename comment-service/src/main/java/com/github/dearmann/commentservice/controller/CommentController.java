@@ -52,4 +52,14 @@ public class CommentController {
         commentService.deleteComment(id);
     }
 
+    @DeleteMapping("/by-userid/{userId}")
+    public void deleteCommentsByUserId(@PathVariable Long userId) {
+        commentService.deleteCommentsByUserId(userId);
+    }
+
+    @DeleteMapping("/by-matchid/{matchId}")
+    public void deleteCommentsByMatchId(@PathVariable Long matchId) {
+        commentService.deleteCommentsByMatchId(matchId);
+    }
+
 }
