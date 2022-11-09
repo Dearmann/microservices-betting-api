@@ -32,6 +32,16 @@ public class CommentController {
         return commentService.getCommentById(id);
     }
 
+    @GetMapping("/by-userid/{userId}")
+    public List<CommentResponse> getAllCommentsByUserId(@PathVariable Long userId) {
+        return commentService.getAllCommentsByUserId(userId);
+    }
+
+    @GetMapping("/by-matchid/{matchId}")
+    public List<CommentResponse> getAllCommentsByMatchId(@PathVariable Long matchId) {
+        return commentService.getAllCommentsByMatchId(matchId);
+    }
+
     @PutMapping("/{id}")
     public CommentResponse updateComment(@RequestBody CommentRequest updatedCommentRequest, @PathVariable Long id) {
         return commentService.updateComment(updatedCommentRequest, id);

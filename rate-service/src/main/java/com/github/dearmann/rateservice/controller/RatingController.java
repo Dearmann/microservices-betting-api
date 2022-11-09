@@ -32,6 +32,16 @@ public class RatingController {
         return ratingService.getRatingById(id);
     }
 
+    @GetMapping("/by-userid/{userId}")
+    public List<RatingResponse> getAllRatingsByUserId(@PathVariable Long userId) {
+        return ratingService.getAllRatingsByUserId(userId);
+    }
+
+    @GetMapping("/by-matchid/{matchId}")
+    public List<RatingResponse> getAllRatingsByMatchId(@PathVariable Long matchId) {
+        return ratingService.getAllRatingsByMatchId(matchId);
+    }
+
     @PutMapping("/{id}")
     public RatingResponse updateRating(@RequestBody RatingRequest updatedRatingRequest, @PathVariable Long id) {
         return ratingService.updateRating(updatedRatingRequest, id);

@@ -54,6 +54,20 @@ public class RatingService {
         return rating.get();
     }
 
+    public List<RatingResponse> getAllRatingsByUserId(Long userId) {
+        return ratingRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::ratingToRatingResponse)
+                .toList();
+    }
+
+    public List<RatingResponse> getAllRatingsByMatchId(Long matchId) {
+        return ratingRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::ratingToRatingResponse)
+                .toList();
+    }
+
     public RatingResponse updateRating(RatingRequest updatedRatingRequest, Long id) {
         Optional<Rating> ratingById = ratingRepository.findById(id);
 

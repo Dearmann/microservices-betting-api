@@ -54,6 +54,20 @@ public class CommentService {
         return comment.get();
     }
 
+    public List<CommentResponse> getAllCommentsByUserId(Long userId) {
+        return commentRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::commentToCommentResponse)
+                .toList();
+    }
+
+    public List<CommentResponse> getAllCommentsByMatchId(Long matchId) {
+        return commentRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::commentToCommentResponse)
+                .toList();
+    }
+
     public CommentResponse updateComment(CommentRequest updatedCommentRequest, Long id) {
         Optional<Comment> commentById = commentRepository.findById(id);
 
