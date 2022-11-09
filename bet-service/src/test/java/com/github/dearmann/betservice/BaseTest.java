@@ -1,6 +1,7 @@
 package com.github.dearmann.betservice;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -8,6 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("it_test")
 public class BaseTest {
 
     static final MySQLContainer mySQLContainer = new MySQLContainer("mysql:8.0.31");;
