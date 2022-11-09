@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,8 +21,7 @@ public class MatchResponse {
     private LocalDateTime estimatedEnd;
     private Boolean matchOver;
     private Long eventId;
-    private Double averageRating;
-    private Integer totalBets;
-    private Integer team1Bets;
-    private Integer team2Bets;
+    private List<BetResponse> bets;
+    private List<CommentResponse> comments;
+    private List<RatingResponse> ratings;
 }
