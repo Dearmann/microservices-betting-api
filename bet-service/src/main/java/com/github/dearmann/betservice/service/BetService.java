@@ -54,6 +54,20 @@ public class BetService {
         return bet.get();
     }
 
+    public List<BetResponse> getAllBetsByUserId(Long userId) {
+        return betRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::betToBetResponse)
+                .toList();
+    }
+
+    public List<BetResponse> getAllBetsByMatchId(Long matchId) {
+        return betRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::betToBetResponse)
+                .toList();
+    }
+
     public BetResponse updateBet(BetRequest updatedBetRequest, Long id) {
         Optional<Bet> betById = betRepository.findById(id);
 
