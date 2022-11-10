@@ -2,6 +2,9 @@ package com.github.dearmann.userservice.service;
 
 import com.github.dearmann.userservice.dto.DtoUtility;
 import com.github.dearmann.userservice.dto.request.UserRequest;
+import com.github.dearmann.userservice.dto.response.BetResponse;
+import com.github.dearmann.userservice.dto.response.CommentResponse;
+import com.github.dearmann.userservice.dto.response.RatingResponse;
 import com.github.dearmann.userservice.dto.response.UserResponse;
 import com.github.dearmann.userservice.exception.BadEntityIdException;
 import com.github.dearmann.userservice.model.User;
@@ -14,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +51,31 @@ public class UserService {
         if (user.isEmpty()) {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
-        return dtoUtility.userToUserResponse(user.get());
+
+        UserResponse userResponse = dtoUtility.userToUserResponse(user.get());
+
+        BetResponse[] betArray = webClient.get()
+                .uri("http://localhost:8082/bets/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(BetResponse[].class)
+                .block();
+        userResponse.setBets(Arrays.stream(betArray != null ? betArray : new BetResponse[0]).toList());
+
+        CommentResponse[] commentArray = webClient.get()
+                .uri("http://localhost:8083/comments/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(CommentResponse[].class)
+                .block();
+        userResponse.setComments(Arrays.stream(commentArray != null ? commentArray : new CommentResponse[0]).toList());
+
+        RatingResponse[] ratingArray = webClient.get()
+                .uri("http://localhost:8084/ratings/by-userid/" + id)
+                .retrieve()
+                .bodyToMono(RatingResponse[].class)
+                .block();
+        userResponse.setRatings(Arrays.stream(ratingArray != null ? ratingArray : new RatingResponse[0]).toList());
+
+        return userResponse;
     }
 
     public User getUserEntityById(Long id) {
