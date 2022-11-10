@@ -26,7 +26,7 @@ public class MatchService {
     private final EventService eventService;
     private final TeamService teamService;
     private final DtoUtility dtoUtility;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public MatchResponse createMatch(MatchRequest matchRequest) {
         TeamResponse teamResponse1 = teamService.getTeamById(matchRequest.getTeam1Id());
@@ -64,22 +64,22 @@ public class MatchService {
 
         MatchResponse matchResponse = dtoUtility.matchToMatchResponse(match.get());
 
-        BetResponse[] betArray = webClient.get()
-                .uri("http://localhost:8082/bets/by-matchid/" + id)
+        BetResponse[] betArray = webClientBuilder.build().get()
+                .uri("http://bet-service/bets/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(BetResponse[].class)
                 .block();
         matchResponse.setBets(Arrays.stream(betArray != null ? betArray : new BetResponse[0]).toList());
 
-        CommentResponse[] commentArray = webClient.get()
-                .uri("http://localhost:8083/comments/by-matchid/" + id)
+        CommentResponse[] commentArray = webClientBuilder.build().get()
+                .uri("http://comment-service/comments/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(CommentResponse[].class)
                 .block();
         matchResponse.setComments(Arrays.stream(commentArray != null ? commentArray : new CommentResponse[0]).toList());
 
-        RatingResponse[] ratingArray = webClient.get()
-                .uri("http://localhost:8084/ratings/by-matchid/" + id)
+        RatingResponse[] ratingArray = webClientBuilder.build().get()
+                .uri("http://rate-service/ratings/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(RatingResponse[].class)
                 .block();
@@ -120,18 +120,18 @@ public class MatchService {
             throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        webClient.delete()
-                .uri("http://localhost:8082/bets/by-matchid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://bet-service/bets/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-        webClient.delete()
-                .uri("http://localhost:8083/comments/by-matchid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://comment-service/comments/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-        webClient.delete()
-                .uri("http://localhost:8084/ratings/by-matchid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://rate-service/ratings/by-matchid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();

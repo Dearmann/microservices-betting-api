@@ -28,7 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final DtoUtility dtoUtility;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public UserResponse createUser(UserRequest userRequest) {
         User user = dtoUtility.userRequestToUser(userRequest, 0L);
@@ -54,22 +54,22 @@ public class UserService {
 
         UserResponse userResponse = dtoUtility.userToUserResponse(user.get());
 
-        BetResponse[] betArray = webClient.get()
-                .uri("http://localhost:8082/bets/by-userid/" + id)
+        BetResponse[] betArray = webClientBuilder.build().get()
+                .uri("http://bet-service/bets/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(BetResponse[].class)
                 .block();
         userResponse.setBets(Arrays.stream(betArray != null ? betArray : new BetResponse[0]).toList());
 
-        CommentResponse[] commentArray = webClient.get()
-                .uri("http://localhost:8083/comments/by-userid/" + id)
+        CommentResponse[] commentArray = webClientBuilder.build().get()
+                .uri("http://comment-service/comments/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(CommentResponse[].class)
                 .block();
         userResponse.setComments(Arrays.stream(commentArray != null ? commentArray : new CommentResponse[0]).toList());
 
-        RatingResponse[] ratingArray = webClient.get()
-                .uri("http://localhost:8084/ratings/by-userid/" + id)
+        RatingResponse[] ratingArray = webClientBuilder.build().get()
+                .uri("http://rate-service/ratings/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(RatingResponse[].class)
                 .block();
@@ -110,18 +110,18 @@ public class UserService {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        webClient.delete()
-                .uri("http://localhost:8082/bets/by-userid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://bet-service/bets/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-        webClient.delete()
-                .uri("http://localhost:8083/comments/by-userid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://comment-service/comments/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-        webClient.delete()
-                .uri("http://localhost:8084/ratings/by-userid/" + id)
+        webClientBuilder.build().delete()
+                .uri("http://rate-service/ratings/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
