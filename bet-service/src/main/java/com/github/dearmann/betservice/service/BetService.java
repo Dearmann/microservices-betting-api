@@ -54,6 +54,20 @@ public class BetService {
         return bet.get();
     }
 
+    public List<BetResponse> getAllBetsByUserId(Long userId) {
+        return betRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::betToBetResponse)
+                .toList();
+    }
+
+    public List<BetResponse> getAllBetsByMatchId(Long matchId) {
+        return betRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::betToBetResponse)
+                .toList();
+    }
+
     public BetResponse updateBet(BetRequest updatedBetRequest, Long id) {
         Optional<Bet> betById = betRepository.findById(id);
 
@@ -77,5 +91,15 @@ public class BetService {
             throw new BadEntityIdException("Bet not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         betRepository.delete(betToDelete.get());
+    }
+
+    public void deleteBetsByUserId(Long userId) {
+        List<Bet> betsByUserId = betRepository.findByUserId(userId);
+        betRepository.deleteAll(betsByUserId);
+    }
+
+    public void deleteBetsByMatchId(Long matchId) {
+        List<Bet> betsByMatchId = betRepository.findByMatchId(matchId);
+        betRepository.deleteAll(betsByMatchId);
     }
 }

@@ -32,6 +32,16 @@ public class BetController {
         return betService.getBetById(id);
     }
 
+    @GetMapping("/by-userid/{userId}")
+    public List<BetResponse> getAllBetsByUserId(@PathVariable Long userId) {
+        return betService.getAllBetsByUserId(userId);
+    }
+
+    @GetMapping("/by-matchid/{matchId}")
+    public List<BetResponse> getAllBetsByMatchId(@PathVariable Long matchId) {
+        return betService.getAllBetsByMatchId(matchId);
+    }
+
     @PutMapping("/{id}")
     public BetResponse updateBet(@RequestBody BetRequest updatedBetRequest, @PathVariable Long id) {
         return betService.updateBet(updatedBetRequest, id);
@@ -40,6 +50,16 @@ public class BetController {
     @DeleteMapping("/{id}")
     public void deleteBet(@PathVariable Long id) {
         betService.deleteBet(id);
+    }
+
+    @DeleteMapping("/by-userid/{userId}")
+    public void deleteBetsByUserId(@PathVariable Long userId) {
+        betService.deleteBetsByUserId(userId);
+    }
+
+    @DeleteMapping("/by-matchid/{matchId}")
+    public void deleteBetsByMatchId(@PathVariable Long matchId) {
+        betService.deleteBetsByMatchId(matchId);
     }
 
 }

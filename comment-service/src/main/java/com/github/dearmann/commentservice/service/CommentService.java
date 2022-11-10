@@ -54,6 +54,20 @@ public class CommentService {
         return comment.get();
     }
 
+    public List<CommentResponse> getAllCommentsByUserId(Long userId) {
+        return commentRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::commentToCommentResponse)
+                .toList();
+    }
+
+    public List<CommentResponse> getAllCommentsByMatchId(Long matchId) {
+        return commentRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::commentToCommentResponse)
+                .toList();
+    }
+
     public CommentResponse updateComment(CommentRequest updatedCommentRequest, Long id) {
         Optional<Comment> commentById = commentRepository.findById(id);
 
@@ -78,5 +92,15 @@ public class CommentService {
             throw new BadEntityIdException("Comment not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         commentRepository.delete(commentToDelete.get());
+    }
+
+    public void deleteCommentsByUserId(Long userId) {
+        List<Comment> commentsByUserId = commentRepository.findByUserId(userId);
+        commentRepository.deleteAll(commentsByUserId);
+    }
+
+    public void deleteCommentsByMatchId(Long matchId) {
+        List<Comment> commentsByMatchId = commentRepository.findByMatchId(matchId);
+        commentRepository.deleteAll(commentsByMatchId);
     }
 }

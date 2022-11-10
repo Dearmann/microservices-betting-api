@@ -54,6 +54,20 @@ public class RatingService {
         return rating.get();
     }
 
+    public List<RatingResponse> getAllRatingsByUserId(Long userId) {
+        return ratingRepository.findByUserId(userId)
+                .stream()
+                .map(dtoUtility::ratingToRatingResponse)
+                .toList();
+    }
+
+    public List<RatingResponse> getAllRatingsByMatchId(Long matchId) {
+        return ratingRepository.findByMatchId(matchId)
+                .stream()
+                .map(dtoUtility::ratingToRatingResponse)
+                .toList();
+    }
+
     public RatingResponse updateRating(RatingRequest updatedRatingRequest, Long id) {
         Optional<Rating> ratingById = ratingRepository.findById(id);
 
@@ -78,5 +92,15 @@ public class RatingService {
             throw new BadEntityIdException("Rating not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         ratingRepository.delete(ratingToDelete.get());
+    }
+
+    public void deleteRatingsByUserId(Long userId) {
+        List<Rating> ratingsByUserId = ratingRepository.findByUserId(userId);
+        ratingRepository.deleteAll(ratingsByUserId);
+    }
+
+    public void deleteRatingsByMatchId(Long matchId) {
+        List<Rating> ratingsByMatchId = ratingRepository.findByMatchId(matchId);
+        ratingRepository.deleteAll(ratingsByMatchId);
     }
 }
