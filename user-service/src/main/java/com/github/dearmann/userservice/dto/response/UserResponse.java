@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -13,13 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private Long id;
-    private String role;
+    private Long jpaId;
+    private String keycloakId;
     private String username;
-    private String password;
     private String email;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLogin;
+    private String firstname;
+    private String lastname;
+    private Long createdAtTimestamp;
+    private List<String> roles;
     private List<BetResponse> bets;
     private List<CommentResponse> comments;
     private List<RatingResponse> ratings;
