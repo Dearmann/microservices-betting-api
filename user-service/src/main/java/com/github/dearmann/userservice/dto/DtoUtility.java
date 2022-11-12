@@ -3,34 +3,43 @@ package com.github.dearmann.userservice.dto;
 import com.github.dearmann.userservice.dto.request.UserRequest;
 import com.github.dearmann.userservice.dto.response.UserResponse;
 import com.github.dearmann.userservice.model.User;
+import com.github.dearmann.userservice.service.KeycloakService;
+import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DtoUtility {
+import java.util.List;
 
-    public User userRequestToUser(UserRequest userRequest, Long id) {
+@Component
+@RequiredArgsConstructor
+public class DtoUtility {
+    private final KeycloakService keycloakService;
+
+    public User userRequestToUser(UserRequest userRequest, Long jpaId) {
         return User.builder()
-                .id(id)
-                .role(userRequest.getRole())
+                .id(jpaId)
                 .username(userRequest.getUsername())
-                .password(userRequest.getPassword())
-                .email(userRequest.getEmail())
                 .build();
     }
 
     public UserResponse userToUserResponse(User user) {
+        List<UserRepresentation> keycloakUser = keycloakService.getUserByUsername(user.getUsername());
+
+        if (keycloakUser.size() == 1) {
+            return UserResponse.builder()
+                    .jpaId(user.getId())
+                    .keycloakId(keycloakUser.get(0).getId())
+                    .username(keycloakUser.get(0).getUsername())
+                    .email(keycloakUser.get(0).getEmail())
+                    .firstname(keycloakUser.get(0).getFirstName())
+                    .lastname(keycloakUser.get(0).getLastName())
+                    .roles(keycloakUser.get(0).getRealmRoles())
+                    .createdAtTimestamp(keycloakUser.get(0).getCreatedTimestamp())
+                    .build();
+        }
         return UserResponse.builder()
-                .id(user.getId())
-                .role(user.getRole())
+                .jpaId(user.getId())
                 .username(user.getUsername())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .createdAt(user.getCreatedAt())
-                .lastLogin(user.getLastLogin())
-                // TODO: fetch (in service layer) bets, comments and ratings from other microservices.
-                //.bets()
-                //.comments()
-                //.ratings()
                 .build();
     }
 }

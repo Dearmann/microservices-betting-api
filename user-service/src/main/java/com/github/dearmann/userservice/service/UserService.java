@@ -10,13 +10,14 @@ import com.github.dearmann.userservice.exception.BadEntityIdException;
 import com.github.dearmann.userservice.model.User;
 import com.github.dearmann.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +30,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final DtoUtility dtoUtility;
     private final WebClient.Builder webClientBuilder;
+    private final KeycloakService keycloakService;
 
     public UserResponse createUser(UserRequest userRequest) {
         User user = dtoUtility.userRequestToUser(userRequest, 0L);
-        user.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-        user = userRepository.save(user);
+
+        Integer httpStatusCode = keycloakService.createUser(userRequest);
+        if (httpStatusCode == 201) {
+            user = userRepository.save(user);
+        }
+        if (httpStatusCode == 409) {
+            throw new ClientErrorException("Username or Email taken", Response.Status.CONFLICT);
+        }
 
         return dtoUtility.userToUserResponse(user);
     }
@@ -94,13 +102,11 @@ public class UserService {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        User updatedUser = dtoUtility.userRequestToUser(updatedUserRequest, id);
-
-        // Can't edit createdAt of a user
-        updatedUser.setCreatedAt(userById.get().getCreatedAt());
-        updatedUser = userRepository.save(updatedUser);
-
-        return dtoUtility.userToUserResponse(updatedUser);
+        List<UserRepresentation> userByUsername = keycloakService.getUserByUsername(userById.get().getUsername());
+        if (userByUsername.size() == 1) {
+            keycloakService.updateUser(updatedUserRequest, userByUsername.get(0).getId());
+        }
+        return dtoUtility.userToUserResponse(userById.get());
     }
 
     public void deleteUser(Long id) {
@@ -126,6 +132,10 @@ public class UserService {
                 .bodyToMono(Void.class)
                 .block();
 
+        List<UserRepresentation> userByUsername = keycloakService.getUserByUsername(userToDelete.get().getUsername());
+        if (userByUsername.size() == 1) {
+            keycloakService.deleteUser(userByUsername.get(0).getId());
+        }
         userRepository.delete(userToDelete.get());
     }
 }
