@@ -49,7 +49,6 @@ class UserIntegrationTests extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userRequestJSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.role", is(userRequest.getRole())))
                 .andExpect(jsonPath("$.username", is(userRequest.getUsername())))
                 .andExpect(jsonPath("$.password", is(userRequest.getPassword())))
                 .andExpect(jsonPath("$.email", is(userRequest.getEmail())))
@@ -60,8 +59,11 @@ class UserIntegrationTests extends BaseTest {
     @Test
     void shouldGetAllUsers() throws Exception {
         List<User> userList = new ArrayList<>();
-        userList.add(dtoUtility.userRequestToUser(getUserRequest(), 0L));
-        userList.add(dtoUtility.userRequestToUser(getUserRequest(), 0L));
+        UserRequest userRequest1 = getUserRequest();
+        UserRequest userRequest2 = getUserRequest();
+        userRequest2.setUsername("test username 2");
+        userList.add(dtoUtility.userRequestToUser(userRequest1, 0L));
+        userList.add(dtoUtility.userRequestToUser(userRequest2, 0L));
         userRepository.saveAll(userList);
 
         mockMvc.perform(get("/users"))
@@ -77,7 +79,6 @@ class UserIntegrationTests extends BaseTest {
 
         mockMvc.perform(get("/users/{id}", savedUser.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.role", is(userRequest.getRole())))
                 .andExpect(jsonPath("$.username", is(userRequest.getUsername())))
                 .andExpect(jsonPath("$.password", is(userRequest.getPassword())))
                 .andExpect(jsonPath("$.email", is(userRequest.getEmail())))
@@ -96,7 +97,6 @@ class UserIntegrationTests extends BaseTest {
         UserRequest userRequest = getUserRequest();
         User savedUser = userRepository.save(dtoUtility.userRequestToUser(userRequest, 0L));
         UserRequest updatedUserRequest = getUserRequest();
-        updatedUserRequest.setRole("EDITED_TEST_ROLE");
         updatedUserRequest.setUsername("edited test username");
         updatedUserRequest.setPassword("edited test password");
         updatedUserRequest.setEmail("edited.test@email.com");
@@ -106,8 +106,7 @@ class UserIntegrationTests extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserRequestJSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.role", is(updatedUserRequest.getRole())))
-                .andExpect(jsonPath("$.username", is(updatedUserRequest.getUsername())))
+                .andExpect(jsonPath("$.username", is(userRequest.getUsername())))
                 .andExpect(jsonPath("$.password", is(updatedUserRequest.getPassword())))
                 .andExpect(jsonPath("$.email", is(updatedUserRequest.getEmail())))
                 .andDo(print());
@@ -116,7 +115,6 @@ class UserIntegrationTests extends BaseTest {
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingUser() throws Exception {
         UserRequest updatedUserRequest = getUserRequest();
-        updatedUserRequest.setRole("EDITED_TEST_ROLE");
         updatedUserRequest.setUsername("edited test username");
         updatedUserRequest.setPassword("edited test password");
         updatedUserRequest.setEmail("edited.test@email.com");
@@ -148,10 +146,11 @@ class UserIntegrationTests extends BaseTest {
 
     private UserRequest getUserRequest() {
         return UserRequest.builder()
-                .role("TEST_ROLE")
                 .username("test username")
                 .password("test password")
                 .email("test@email.com")
+                .firstname("test firstname")
+                .lastname("test lastname")
                 .build();
     }
 }
