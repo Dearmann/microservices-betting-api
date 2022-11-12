@@ -2,18 +2,15 @@ package com.github.dearmann.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,10 +21,5 @@ public class User {
     @Id
     @GeneratedValue
     private Long id;
-    private String role;
     private String username;
-    private String password;
-    private String email;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLogin;
 }
