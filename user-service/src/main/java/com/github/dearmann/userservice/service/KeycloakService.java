@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,18 @@ public class KeycloakService {
 
     public List<UserRepresentation> getUserByUsername(String username){
         return realmResource.users().search(username, true);
+    }
+
+    public Optional<UserRepresentation> getOneUserByUsername(String username){
+        List<UserRepresentation> userByUsername = realmResource.users().search(username, true);
+        if (userByUsername.size() == 1) {
+            return Optional.ofNullable(userByUsername.get(0));
+        }
+        return Optional.empty();
+    }
+
+    public UserRepresentation getUserById(String userId){
+        return realmResource.users().get(userId).toRepresentation();
     }
 
     public void updateUser(UserRequest userRequest, String userId){
