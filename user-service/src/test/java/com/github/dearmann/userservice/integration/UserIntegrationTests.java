@@ -77,7 +77,7 @@ class UserIntegrationTests extends BaseTest {
         UserRequest userRequest = getUserRequest();
         User savedUser = userRepository.save(dtoUtility.userRequestToUser(userRequest, 0L));
 
-        mockMvc.perform(get("/users/{id}", savedUser.getId()))
+        mockMvc.perform(get("/users/{id}", savedUser.getJpaId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is(userRequest.getUsername())))
                 .andExpect(jsonPath("$.password", is(userRequest.getPassword())))
@@ -102,7 +102,7 @@ class UserIntegrationTests extends BaseTest {
         updatedUserRequest.setEmail("edited.test@email.com");
         String updatedUserRequestJSON = objectMapper.writeValueAsString(updatedUserRequest);
 
-        mockMvc.perform(put("/users/{id}", savedUser.getId())
+        mockMvc.perform(put("/users/{id}", savedUser.getJpaId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserRequestJSON))
                 .andExpect(status().isOk())
@@ -132,7 +132,7 @@ class UserIntegrationTests extends BaseTest {
         UserRequest userRequest = getUserRequest();
         User savedUser = userRepository.save(dtoUtility.userRequestToUser(userRequest, 0L));
 
-        mockMvc.perform(delete("/users/{id}", savedUser.getId()))
+        mockMvc.perform(delete("/users/{id}", savedUser.getJpaId()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

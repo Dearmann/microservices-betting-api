@@ -22,7 +22,10 @@ public class User {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long jpaId;
+
+    @Column(unique = true)
+    private String keycloakId;
 
     @Column(unique = true)
     private String username;

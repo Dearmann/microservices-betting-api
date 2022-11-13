@@ -10,7 +10,6 @@ import com.github.dearmann.userservice.exception.BadEntityIdException;
 import com.github.dearmann.userservice.model.User;
 import com.github.dearmann.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +32,9 @@ public class UserService {
     private final KeycloakService keycloakService;
 
     public UserResponse createUser(UserRequest userRequest) {
+        Integer httpStatusCode = keycloakService.createUser(userRequest);
         User user = dtoUtility.userRequestToUser(userRequest, 0L);
 
-        Integer httpStatusCode = keycloakService.createUser(userRequest);
         if (httpStatusCode == 201) {
             user = userRepository.save(user);
         }
@@ -102,10 +101,8 @@ public class UserService {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        List<UserRepresentation> userByUsername = keycloakService.getUserByUsername(userById.get().getUsername());
-        if (userByUsername.size() == 1) {
-            keycloakService.updateUser(updatedUserRequest, userByUsername.get(0).getId());
-        }
+        keycloakService.updateUser(updatedUserRequest, userById.get().getKeycloakId());
+
         return dtoUtility.userToUserResponse(userById.get());
     }
 
@@ -132,10 +129,7 @@ public class UserService {
                 .bodyToMono(Void.class)
                 .block();
 
-        List<UserRepresentation> userByUsername = keycloakService.getUserByUsername(userToDelete.get().getUsername());
-        if (userByUsername.size() == 1) {
-            keycloakService.deleteUser(userByUsername.get(0).getId());
-        }
+        keycloakService.deleteUser(userToDelete.get().getKeycloakId());
         userRepository.delete(userToDelete.get());
     }
 }

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,29 +16,38 @@ public class DtoUtility {
     private final KeycloakService keycloakService;
 
     public User userRequestToUser(UserRequest userRequest, Long jpaId) {
+        Optional<UserRepresentation> keycloakUser = keycloakService.getOneUserByUsername(userRequest.getUsername());
+
+        if (keycloakUser.isPresent()) {
+            return User.builder()
+                    .jpaId(jpaId)
+                    .keycloakId(keycloakUser.get().getId())
+                    .username(userRequest.getUsername())
+                    .build();
+        }
         return User.builder()
-                .id(jpaId)
+                .jpaId(jpaId)
                 .username(userRequest.getUsername())
                 .build();
     }
 
     public UserResponse userToUserResponse(User user) {
-        List<UserRepresentation> keycloakUser = keycloakService.getUserByUsername(user.getUsername());
+        UserRepresentation keycloakUser = keycloakService.getUserById(user.getKeycloakId());
 
-        if (keycloakUser.size() == 1) {
+        if (keycloakUser != null) {
             return UserResponse.builder()
-                    .jpaId(user.getId())
-                    .keycloakId(keycloakUser.get(0).getId())
-                    .username(keycloakUser.get(0).getUsername())
-                    .email(keycloakUser.get(0).getEmail())
-                    .firstname(keycloakUser.get(0).getFirstName())
-                    .lastname(keycloakUser.get(0).getLastName())
-                    .roles(keycloakUser.get(0).getRealmRoles())
-                    .createdAtTimestamp(keycloakUser.get(0).getCreatedTimestamp())
+                    .jpaId(user.getJpaId())
+                    .keycloakId(keycloakUser.getId())
+                    .username(keycloakUser.getUsername())
+                    .email(keycloakUser.getEmail())
+                    .firstname(keycloakUser.getFirstName())
+                    .lastname(keycloakUser.getLastName())
+                    .createdAtTimestamp(keycloakUser.getCreatedTimestamp())
+                    .roles(keycloakUser.getRealmRoles())
                     .build();
         }
         return UserResponse.builder()
-                .jpaId(user.getId())
+                .jpaId(user.getJpaId())
                 .username(user.getUsername())
                 .build();
     }
