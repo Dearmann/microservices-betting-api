@@ -22,7 +22,12 @@ public class KeycloakController {
         return keyCloakService.createUser(userRequest);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/{id}")
+    public UserRepresentation getUserById(@PathVariable("id") String id){
+        return keyCloakService.getUserById(id);
+    }
+
+    @GetMapping("/by-username/{username}")
     public List<UserRepresentation> getUserByUsername(@PathVariable("username") String username){
         return keyCloakService.getUserByUsername(username);
     }

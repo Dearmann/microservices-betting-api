@@ -75,23 +75,24 @@ public class UserService {
         }
 
         UserResponse userResponse = dtoUtility.userToUserResponse(user.get());
+        String id = user.get().getKeycloakId();
 
         BetResponse[] betArray = webClientBuilder.build().get()
-                .uri("http://bet-service/bets/by-username/" + username)
+                .uri("http://bet-service/bets/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(BetResponse[].class)
                 .block();
         userResponse.setBets(Arrays.stream(betArray != null ? betArray : new BetResponse[0]).toList());
 
         CommentResponse[] commentArray = webClientBuilder.build().get()
-                .uri("http://comment-service/comments/by-username/" + username)
+                .uri("http://comment-service/comments/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(CommentResponse[].class)
                 .block();
         userResponse.setComments(Arrays.stream(commentArray != null ? commentArray : new CommentResponse[0]).toList());
 
         RatingResponse[] ratingArray = webClientBuilder.build().get()
-                .uri("http://rate-service/ratings/by-username/" + username)
+                .uri("http://rate-service/ratings/by-userid/" + id)
                 .retrieve()
                 .bodyToMono(RatingResponse[].class)
                 .block();
