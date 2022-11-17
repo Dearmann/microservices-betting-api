@@ -6,6 +6,7 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
 import java.util.Collections;
@@ -14,9 +15,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class KeycloakService {
 
     private final RealmResource realmResource;
+    private final UserService userService;
 
     public Integer createUser(UserRequest userRequest){
         UserRepresentation user = new UserRepresentation();
@@ -59,6 +62,7 @@ public class KeycloakService {
     }
 
     public void deleteUser(String userId){
+        userService.deleteUserInteractions(userId);
         realmResource.users().get(userId).remove();
     }
 

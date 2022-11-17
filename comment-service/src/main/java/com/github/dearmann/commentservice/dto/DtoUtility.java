@@ -21,8 +21,10 @@ public class DtoUtility {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .userId(comment.getUserId())
+                .username(comment.getUsername())
                 .matchId(comment.getMatchId())
                 .message(comment.getMessage())
+                .createdDateTime(comment.getCreatedDateTime())
                 .build();
     }
 }

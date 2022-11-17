@@ -33,7 +33,7 @@ public class BetController {
     }
 
     @GetMapping("/by-userid/{userId}")
-    public List<BetResponse> getAllBetsByUserId(@PathVariable Long userId) {
+    public List<BetResponse> getAllBetsByUserId(@PathVariable String userId) {
         return betService.getAllBetsByUserId(userId);
     }
 
@@ -53,7 +53,7 @@ public class BetController {
     }
 
     @DeleteMapping("/by-userid/{userId}")
-    public void deleteBetsByUserId(@PathVariable Long userId) {
+    public void deleteBetsByUserId(@PathVariable String userId) {
         betService.deleteBetsByUserId(userId);
     }
 

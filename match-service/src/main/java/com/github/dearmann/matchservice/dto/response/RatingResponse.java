@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RatingResponse {
     private Long id;
-    private Long userId;
+    private String userId;
     private Long matchId;
     private Integer rating;
 }

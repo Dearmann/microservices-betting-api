@@ -4,6 +4,7 @@ import com.github.dearmann.userservice.dto.request.UserRequest;
 import com.github.dearmann.userservice.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +17,17 @@ public class KeycloakController {
     private final KeycloakService keyCloakService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Integer createUser(@RequestBody UserRequest userRequest){
         return keyCloakService.createUser(userRequest);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/{id}")
+    public UserRepresentation getUserById(@PathVariable("id") String id){
+        return keyCloakService.getUserById(id);
+    }
+
+    @GetMapping("/by-username/{username}")
     public List<UserRepresentation> getUserByUsername(@PathVariable("username") String username){
         return keyCloakService.getUserByUsername(username);
     }

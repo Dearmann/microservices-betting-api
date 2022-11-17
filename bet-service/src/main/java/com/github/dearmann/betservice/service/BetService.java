@@ -54,7 +54,7 @@ public class BetService {
         return bet.get();
     }
 
-    public List<BetResponse> getAllBetsByUserId(Long userId) {
+    public List<BetResponse> getAllBetsByUserId(String userId) {
         return betRepository.findByUserId(userId)
                 .stream()
                 .map(dtoUtility::betToBetResponse)
@@ -93,7 +93,7 @@ public class BetService {
         betRepository.delete(betToDelete.get());
     }
 
-    public void deleteBetsByUserId(Long userId) {
+    public void deleteBetsByUserId(String userId) {
         List<Bet> betsByUserId = betRepository.findByUserId(userId);
         betRepository.deleteAll(betsByUserId);
     }

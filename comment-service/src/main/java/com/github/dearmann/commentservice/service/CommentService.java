@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,9 +24,19 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final DtoUtility dtoUtility;
+    private final WebClient.Builder webClientBuilder;
 
     public CommentResponse createComment(CommentRequest commentRequest) {
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
+        comment.setCreatedDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        String username = webClientBuilder.build().get()
+                .uri("http://user-service/users/username/" + commentRequest.getUserId())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        comment.setUsername(username);
+
         comment = commentRepository.save(comment);
 
         return dtoUtility.commentToCommentResponse(comment);
@@ -54,7 +67,7 @@ public class CommentService {
         return comment.get();
     }
 
-    public List<CommentResponse> getAllCommentsByUserId(Long userId) {
+    public List<CommentResponse> getAllCommentsByUserId(String userId) {
         return commentRepository.findByUserId(userId)
                 .stream()
                 .map(dtoUtility::commentToCommentResponse)
@@ -94,7 +107,7 @@ public class CommentService {
         commentRepository.delete(commentToDelete.get());
     }
 
-    public void deleteCommentsByUserId(Long userId) {
+    public void deleteCommentsByUserId(String userId) {
         List<Comment> commentsByUserId = commentRepository.findByUserId(userId);
         commentRepository.deleteAll(commentsByUserId);
     }

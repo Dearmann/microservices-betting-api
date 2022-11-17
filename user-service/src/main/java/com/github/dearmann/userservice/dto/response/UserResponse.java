@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private Long jpaId;
     private String keycloakId;
     private String username;
     private String email;

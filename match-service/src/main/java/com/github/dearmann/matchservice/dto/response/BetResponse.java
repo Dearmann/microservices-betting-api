@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BetResponse {
     private Long id;
-    private Long userId;
+    private String userId;
     private Long matchId;
     private Long predictedTeamId;
     private Boolean correctPrediction;
