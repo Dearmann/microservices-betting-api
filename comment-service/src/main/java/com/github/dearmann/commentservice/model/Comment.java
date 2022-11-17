@@ -23,6 +23,7 @@ public class Comment {
     @GeneratedValue
     private Long id;
     private String userId;
+    private String username;
     private Long matchId;
     private String message;
     private LocalDateTime createdDateTime;

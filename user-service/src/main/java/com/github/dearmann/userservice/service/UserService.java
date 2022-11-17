@@ -34,6 +34,16 @@ public class UserService {
                 .toList();
     }
 
+    public String getUsernameById(String id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
+        }
+
+        return user.get().getUsername();
+    }
+
     public UserResponse getUserInteractionsById(String id) {
         Optional<User> user = userRepository.findById(id);
 

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,10 +24,19 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final DtoUtility dtoUtility;
+    private final WebClient.Builder webClientBuilder;
 
     public CommentResponse createComment(CommentRequest commentRequest) {
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
         comment.setCreatedDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        String username = webClientBuilder.build().get()
+                .uri("http://user-service/users/username/" + commentRequest.getUserId())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        comment.setUsername(username);
+
         comment = commentRepository.save(comment);
 
         return dtoUtility.commentToCommentResponse(comment);

@@ -22,6 +22,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/username/{id}")
+    public String getUsernameById(@PathVariable String id) {
+        return userService.getUsernameById(id);
+    }
+
     @GetMapping("/{id}")
     public UserResponse getUserInteractionsById(@PathVariable String id) {
         return userService.getUserInteractionsById(id);
