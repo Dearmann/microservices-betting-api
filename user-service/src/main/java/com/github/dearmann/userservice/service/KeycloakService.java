@@ -19,6 +19,7 @@ import java.util.Optional;
 public class KeycloakService {
 
     private final RealmResource realmResource;
+    private final UserService userService;
 
     public Integer createUser(UserRequest userRequest){
         UserRepresentation user = new UserRepresentation();
@@ -61,6 +62,7 @@ public class KeycloakService {
     }
 
     public void deleteUser(String userId){
+        userService.deleteUserInteractions(userId);
         realmResource.users().get(userId).remove();
     }
 

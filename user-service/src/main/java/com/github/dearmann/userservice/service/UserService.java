@@ -1,7 +1,6 @@
 package com.github.dearmann.userservice.service;
 
 import com.github.dearmann.userservice.dto.DtoUtility;
-import com.github.dearmann.userservice.dto.request.UserRequest;
 import com.github.dearmann.userservice.dto.response.BetResponse;
 import com.github.dearmann.userservice.dto.response.CommentResponse;
 import com.github.dearmann.userservice.dto.response.RatingResponse;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,21 +26,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final DtoUtility dtoUtility;
     private final WebClient.Builder webClientBuilder;
-    private final KeycloakService keycloakService;
-
-    public UserResponse createUser(UserRequest userRequest) {
-        Integer httpStatusCode = keycloakService.createUser(userRequest);
-        User user = dtoUtility.userRequestToUser(userRequest, 0L);
-
-        if (httpStatusCode == 201) {
-            user = userRepository.save(user);
-        }
-        if (httpStatusCode == 409) {
-            throw new ClientErrorException("Username or Email taken", Response.Status.CONFLICT);
-        }
-
-        return dtoUtility.userToUserResponse(user);
-    }
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
@@ -52,7 +34,7 @@ public class UserService {
                 .toList();
     }
 
-    public UserResponse getUserById(Long id) {
+    public UserResponse getUserInteractionsById(String id) {
         Optional<User> user = userRepository.findById(id);
 
         if (user.isEmpty()) {
@@ -85,31 +67,43 @@ public class UserService {
         return userResponse;
     }
 
-    public User getUserEntityById(Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public UserResponse getUserInteractionsByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
 
         if (user.isEmpty()) {
-            throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
-        }
-        return user.get();
-    }
-
-    public UserResponse updateUser(UserRequest updatedUserRequest, Long id) {
-        Optional<User> userById = userRepository.findById(id);
-
-        if (userById.isEmpty()) {
-            throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
+            throw new BadEntityIdException("User not found Username - " + username, HttpStatus.NOT_FOUND);
         }
 
-        keycloakService.updateUser(updatedUserRequest, userById.get().getKeycloakId());
+        UserResponse userResponse = dtoUtility.userToUserResponse(user.get());
 
-        return dtoUtility.userToUserResponse(userById.get());
+        BetResponse[] betArray = webClientBuilder.build().get()
+                .uri("http://bet-service/bets/by-username/" + username)
+                .retrieve()
+                .bodyToMono(BetResponse[].class)
+                .block();
+        userResponse.setBets(Arrays.stream(betArray != null ? betArray : new BetResponse[0]).toList());
+
+        CommentResponse[] commentArray = webClientBuilder.build().get()
+                .uri("http://comment-service/comments/by-username/" + username)
+                .retrieve()
+                .bodyToMono(CommentResponse[].class)
+                .block();
+        userResponse.setComments(Arrays.stream(commentArray != null ? commentArray : new CommentResponse[0]).toList());
+
+        RatingResponse[] ratingArray = webClientBuilder.build().get()
+                .uri("http://rate-service/ratings/by-username/" + username)
+                .retrieve()
+                .bodyToMono(RatingResponse[].class)
+                .block();
+        userResponse.setRatings(Arrays.stream(ratingArray != null ? ratingArray : new RatingResponse[0]).toList());
+
+        return userResponse;
     }
 
-    public void deleteUser(Long id) {
-        Optional<User> userToDelete = userRepository.findById(id);
+    public void deleteUserInteractions(String id) {
+        Optional<User> userToDeleteInteractions = userRepository.findById(id);
 
-        if (userToDelete.isEmpty()) {
+        if (userToDeleteInteractions.isEmpty()) {
             throw new BadEntityIdException("User not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
@@ -128,8 +122,5 @@ public class UserService {
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-
-        keycloakService.deleteUser(userToDelete.get().getKeycloakId());
-        userRepository.delete(userToDelete.get());
     }
 }
