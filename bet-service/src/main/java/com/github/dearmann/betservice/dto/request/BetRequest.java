@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BetRequest {
-    private Long userId;
+    private String userId;
     private Long matchId;
     private Long predictedTeamId;
 }

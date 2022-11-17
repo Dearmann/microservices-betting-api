@@ -20,7 +20,7 @@ public class Rating {
     @Id
     @GeneratedValue
     private Long id;
-    private Long userId;
+    private String userId;
     private Long matchId;
     private Integer rating;
 }

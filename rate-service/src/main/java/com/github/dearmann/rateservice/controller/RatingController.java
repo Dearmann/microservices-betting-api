@@ -33,7 +33,7 @@ public class RatingController {
     }
 
     @GetMapping("/by-userid/{userId}")
-    public List<RatingResponse> getAllRatingsByUserId(@PathVariable Long userId) {
+    public List<RatingResponse> getAllRatingsByUserId(@PathVariable String userId) {
         return ratingService.getAllRatingsByUserId(userId);
     }
 
@@ -53,7 +53,7 @@ public class RatingController {
     }
 
     @DeleteMapping("/by-userid/{userId}")
-    public void deleteRatingsByUserId(@PathVariable Long userId) {
+    public void deleteRatingsByUserId(@PathVariable String userId) {
         ratingService.deleteRatingsByUserId(userId);
     }
 

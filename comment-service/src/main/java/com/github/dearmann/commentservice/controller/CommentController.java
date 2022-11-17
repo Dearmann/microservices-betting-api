@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @GetMapping("/by-userid/{userId}")
-    public List<CommentResponse> getAllCommentsByUserId(@PathVariable Long userId) {
+    public List<CommentResponse> getAllCommentsByUserId(@PathVariable String userId) {
         return commentService.getAllCommentsByUserId(userId);
     }
 
@@ -53,7 +53,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/by-userid/{userId}")
-    public void deleteCommentsByUserId(@PathVariable Long userId) {
+    public void deleteCommentsByUserId(@PathVariable String userId) {
         commentService.deleteCommentsByUserId(userId);
     }
 

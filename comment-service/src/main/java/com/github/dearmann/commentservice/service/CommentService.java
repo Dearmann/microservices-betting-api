@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ public class CommentService {
 
     public CommentResponse createComment(CommentRequest commentRequest) {
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
+        comment.setCreatedDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         comment = commentRepository.save(comment);
 
         return dtoUtility.commentToCommentResponse(comment);
@@ -54,7 +57,7 @@ public class CommentService {
         return comment.get();
     }
 
-    public List<CommentResponse> getAllCommentsByUserId(Long userId) {
+    public List<CommentResponse> getAllCommentsByUserId(String userId) {
         return commentRepository.findByUserId(userId)
                 .stream()
                 .map(dtoUtility::commentToCommentResponse)
@@ -94,7 +97,7 @@ public class CommentService {
         commentRepository.delete(commentToDelete.get());
     }
 
-    public void deleteCommentsByUserId(Long userId) {
+    public void deleteCommentsByUserId(String userId) {
         List<Comment> commentsByUserId = commentRepository.findByUserId(userId);
         commentRepository.deleteAll(commentsByUserId);
     }

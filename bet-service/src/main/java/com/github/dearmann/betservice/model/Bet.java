@@ -20,7 +20,7 @@ public class Bet {
     @Id
     @GeneratedValue
     private Long id;
-    private Long userId;
+    private String userId;
     private Long matchId;
     private Long predictedTeamId;
     private Boolean correctPrediction;

@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,7 +22,8 @@ public class Comment {
     @Id
     @GeneratedValue
     private Long id;
-    private Long userId;
+    private String userId;
     private Long matchId;
     private String message;
+    private LocalDateTime createdDateTime;
 }

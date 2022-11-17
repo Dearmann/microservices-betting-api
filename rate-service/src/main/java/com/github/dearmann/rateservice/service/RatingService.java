@@ -54,7 +54,7 @@ public class RatingService {
         return rating.get();
     }
 
-    public List<RatingResponse> getAllRatingsByUserId(Long userId) {
+    public List<RatingResponse> getAllRatingsByUserId(String userId) {
         return ratingRepository.findByUserId(userId)
                 .stream()
                 .map(dtoUtility::ratingToRatingResponse)
@@ -94,7 +94,7 @@ public class RatingService {
         ratingRepository.delete(ratingToDelete.get());
     }
 
-    public void deleteRatingsByUserId(Long userId) {
+    public void deleteRatingsByUserId(String userId) {
         List<Rating> ratingsByUserId = ratingRepository.findByUserId(userId);
         ratingRepository.deleteAll(ratingsByUserId);
     }

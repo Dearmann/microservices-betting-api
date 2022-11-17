@@ -23,6 +23,7 @@ public class DtoUtility {
                 .userId(comment.getUserId())
                 .matchId(comment.getMatchId())
                 .message(comment.getMessage())
+                .createdDateTime(comment.getCreatedDateTime())
                 .build();
     }
 }
