@@ -23,6 +23,17 @@ public class Match {
     @GeneratedValue
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private Winner winner;
+
+    private LocalDateTime start;
+
+    private LocalDateTime end;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(nullable = false)
+    private Event event;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(nullable = false)
     private Team team1;
@@ -30,16 +41,4 @@ public class Match {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(nullable = false)
     private Team team2;
-
-    private Boolean team1Won;
-
-    private LocalDateTime start;
-
-    private LocalDateTime estimatedEnd;
-
-    private Boolean matchOver;
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(nullable = false)
-    private Event event;
 }

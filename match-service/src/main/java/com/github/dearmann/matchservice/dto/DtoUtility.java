@@ -102,26 +102,24 @@ public class DtoUtility {
     public Match matchRequestToMatch(MatchRequest matchRequest, Long id) {
         return Match.builder()
                 .id(id)
+                .winner(matchRequest.getWinner())
+                .start(matchRequest.getStart())
+                .end(matchRequest.getEnd())
+                .event(eventService.getEventEntityById(matchRequest.getEventId()))
                 .team1(teamService.getTeamEntityById(matchRequest.getTeam1Id()))
                 .team2(teamService.getTeamEntityById(matchRequest.getTeam2Id()))
-                .team1Won(matchRequest.getTeam1Won())
-                .start(matchRequest.getStart())
-                .estimatedEnd(matchRequest.getEstimatedEnd())
-                .matchOver(matchRequest.getMatchOver())
-                .event(eventService.getEventEntityById(matchRequest.getEventId()))
                 .build();
     }
 
     public MatchResponse matchToMatchResponse(Match match) {
         return MatchResponse.builder()
                 .id(match.getId())
+                .winner(match.getWinner())
+                .start(match.getStart())
+                .end(match.getEnd())
+                .eventId(match.getEvent().getId())
                 .team1(teamToTeamResponse(match.getTeam1()))
                 .team2(teamToTeamResponse(match.getTeam2()))
-                .team1Won(match.getTeam1Won())
-                .start(match.getStart())
-                .estimatedEnd(match.getEstimatedEnd())
-                .matchOver(match.getMatchOver())
-                .eventId(match.getEvent().getId())
                 .build();
     }
 
