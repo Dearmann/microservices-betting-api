@@ -14,6 +14,7 @@ import java.util.List;
 public class TeamResponse {
     private Long id;
     private String name;
+    private String logoUrl;
     private Long gameId;
     private List<Long> matchesAsTeam1;
     private List<Long> matchesAsTeam2;

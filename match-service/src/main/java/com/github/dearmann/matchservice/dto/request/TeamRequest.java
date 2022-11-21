@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TeamRequest {
     private String name;
+    private String logoUrl;
     private Long gameId;
 }

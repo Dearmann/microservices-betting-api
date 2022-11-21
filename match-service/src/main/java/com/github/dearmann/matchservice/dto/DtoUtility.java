@@ -77,6 +77,7 @@ public class DtoUtility {
         return Game.builder()
                 .id(id)
                 .name(gameRequest.getName())
+                .logoUrl(gameRequest.getLogoUrl())
                 .build();
     }
 
@@ -84,6 +85,7 @@ public class DtoUtility {
         return GameResponse.builder()
                 .id(game.getId())
                 .name(game.getName())
+                .logoUrl(game.getLogoUrl())
                 .eventIds(Optional.ofNullable(game.getEvents())
                         .orElse(Collections.emptyList())
                         .stream()
@@ -127,6 +129,7 @@ public class DtoUtility {
         return Team.builder()
                 .id(id)
                 .name(teamRequest.getName())
+                .logoUrl(teamRequest.getLogoUrl())
                 .game(gameService.getGameEntityById(teamRequest.getGameId()))
                 .build();
     }
@@ -135,6 +138,7 @@ public class DtoUtility {
         return TeamResponse.builder()
                 .id(team.getId())
                 .name(team.getName())
+                .logoUrl(team.getLogoUrl())
                 .gameId(team.getGame().getId())
                 .matchesAsTeam1(Optional.ofNullable(team.getMatchesAsTeam1())
                         .orElse(Collections.emptyList())
