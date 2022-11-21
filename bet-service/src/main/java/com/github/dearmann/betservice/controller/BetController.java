@@ -47,6 +47,12 @@ public class BetController {
         return betService.updateBet(updatedBetRequest, id);
     }
 
+    @PutMapping("/result")
+    public void setMatchResult(@RequestParam("matchId") Long matchId,
+                               @RequestParam("winnerId") Long winnerId) {
+        betService.setMatchResult(matchId, winnerId);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteBet(@PathVariable Long id) {
         betService.deleteBet(id);

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -82,6 +83,15 @@ public class BetService {
         updatedBet = betRepository.save(updatedBet);
 
         return dtoUtility.betToBetResponse(updatedBet);
+    }
+
+    public void setMatchResult(Long matchId, Long winnerId) {
+        List<Bet> betsByMatchId = betRepository.findByMatchId(matchId);
+        for (Bet bet : betsByMatchId) {
+            bet.setMatchFinished(true);
+            bet.setCorrectPrediction(Objects.equals(bet.getPredictedTeamId(), winnerId));
+            betRepository.save(bet);
+        }
     }
 
     public void deleteBet(Long id) {
