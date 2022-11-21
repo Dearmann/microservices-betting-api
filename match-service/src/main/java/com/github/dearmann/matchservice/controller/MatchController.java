@@ -42,6 +42,12 @@ public class MatchController {
         return matchService.updateMatch(updatedMatchRequest, id);
     }
 
+    @PutMapping("/result")
+    public MatchResponse setMatchResult(@RequestParam("matchId") Long matchId,
+                                        @RequestParam("winnerId") Long winnerId) {
+        return matchService.setMatchResult(matchId, winnerId);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteMatch(@PathVariable Long id) {
         matchService.deleteMatch(id);

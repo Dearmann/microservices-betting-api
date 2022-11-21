@@ -5,6 +5,7 @@ import com.github.dearmann.matchservice.dto.request.MatchRequest;
 import com.github.dearmann.matchservice.dto.response.*;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Match;
+import com.github.dearmann.matchservice.model.Winner;
 import com.github.dearmann.matchservice.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -111,6 +112,29 @@ public class MatchService {
         updatedMatch = matchRepository.save(updatedMatch);
 
         return dtoUtility.matchToMatchResponse(updatedMatch);
+    }
+
+    public MatchResponse setMatchResult(Long matchId, Long winnerId) {
+        Optional<Match> match = matchRepository.findById(matchId);
+        if (match.isEmpty()) {
+            throw new BadEntityIdException("Match not found ID - " + matchId, HttpStatus.NOT_FOUND);
+        }
+
+        webClientBuilder.build()
+                .put()
+                .uri("http://bet-service/bets/result" + "?matchId=" + matchId + "&winnerId=" + winnerId)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+
+        if (Objects.equals(match.get().getTeam1().getId(), winnerId)) {
+            match.get().setWinner(Winner.TEAM_1);
+        }
+        if (Objects.equals(match.get().getTeam2().getId(), winnerId)) {
+            match.get().setWinner(Winner.TEAM_2);
+        }
+        Match matchWithResult = matchRepository.save(match.get());
+        return dtoUtility.matchToMatchResponse(matchWithResult);
     }
 
     public void deleteMatch(Long id) {
