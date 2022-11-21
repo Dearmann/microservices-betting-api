@@ -24,6 +24,8 @@ public class Game {
 
     private String name;
 
+    private String logoUrl;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Event> events;
 

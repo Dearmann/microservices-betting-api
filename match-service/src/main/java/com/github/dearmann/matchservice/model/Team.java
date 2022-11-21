@@ -24,6 +24,8 @@ public class Team {
 
     private String name;
 
+    private String logoUrl;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(nullable = false)
     private Game game;
