@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -25,6 +26,7 @@ public class Comment {
     private String userId;
     private String username;
     private Long matchId;
+    @Column(nullable = false)
     private String message;
     private LocalDateTime createdDateTime;
 }

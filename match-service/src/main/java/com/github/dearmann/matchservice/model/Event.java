@@ -23,6 +23,7 @@ public class Event {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     private String region;

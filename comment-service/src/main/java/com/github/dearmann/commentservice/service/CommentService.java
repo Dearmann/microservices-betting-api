@@ -37,6 +37,11 @@ public class CommentService {
                 .block();
         comment.setUsername(username);
 
+        comment.setMessage(comment.getMessage().trim());
+        if (comment.getMessage().isEmpty()) {
+            comment.setMessage(null);
+        }
+
         comment = commentRepository.save(comment);
 
         return dtoUtility.commentToCommentResponse(comment);
