@@ -42,6 +42,16 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/users/**,/keycloak/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200/"
+            allowedHeaders: "*"
+            allowedMethods:
+              - POST
+              - GET
+              - PUT
+              - DELETE
   security:
     oauth2:
       resourceserver:
