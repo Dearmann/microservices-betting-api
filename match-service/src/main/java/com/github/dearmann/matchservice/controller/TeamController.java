@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class TeamController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TeamResponse createTeam(@RequestBody TeamRequest teamRequest) {
+    public TeamResponse createTeam(@Valid @RequestBody TeamRequest teamRequest) {
         return teamService.createTeam(teamRequest);
     }
 
@@ -33,7 +34,7 @@ public class TeamController {
     }
 
     @PutMapping("/{id}")
-    public TeamResponse updateTeam(@RequestBody TeamRequest updatedTeamRequest, @PathVariable Long id) {
+    public TeamResponse updateTeam(@Valid @RequestBody TeamRequest updatedTeamRequest, @PathVariable Long id) {
         return teamService.updateTeam(updatedTeamRequest, id);
     }
 

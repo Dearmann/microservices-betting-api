@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class RatingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RatingResponse createRating(@RequestBody RatingRequest ratingRequest) {
+    public RatingResponse createRating(@Valid @RequestBody RatingRequest ratingRequest) {
          return ratingService.createRating(ratingRequest);
     }
 
@@ -43,7 +44,7 @@ public class RatingController {
     }
 
     @PutMapping("/{id}")
-    public RatingResponse updateRating(@RequestBody RatingRequest updatedRatingRequest, @PathVariable Long id) {
+    public RatingResponse updateRating(@Valid @RequestBody RatingRequest updatedRatingRequest, @PathVariable Long id) {
         return ratingService.updateRating(updatedRatingRequest, id);
     }
 

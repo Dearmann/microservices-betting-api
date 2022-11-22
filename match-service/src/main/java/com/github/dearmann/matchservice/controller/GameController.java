@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class GameController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GameResponse createGame(@RequestBody GameRequest gameRequest) {
+    public GameResponse createGame(@Valid @RequestBody GameRequest gameRequest) {
         return gameService.createGame(gameRequest);
     }
 
@@ -33,7 +34,7 @@ public class GameController {
     }
 
     @PutMapping("/{id}")
-    public GameResponse updateGame(@RequestBody GameRequest updatedGameRequest, @PathVariable Long id) {
+    public GameResponse updateGame(@Valid @RequestBody GameRequest updatedGameRequest, @PathVariable Long id) {
         return gameService.updateGame(updatedGameRequest, id);
     }
 

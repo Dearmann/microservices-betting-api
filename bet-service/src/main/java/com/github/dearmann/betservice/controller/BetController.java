@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class BetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BetResponse createBet(@RequestBody BetRequest betRequest) {
+    public BetResponse createBet(@Valid @RequestBody BetRequest betRequest) {
          return betService.createBet(betRequest);
     }
 
@@ -43,7 +44,7 @@ public class BetController {
     }
 
     @PutMapping("/{id}")
-    public BetResponse updateBet(@RequestBody BetRequest updatedBetRequest, @PathVariable Long id) {
+    public BetResponse updateBet(@Valid @RequestBody BetRequest updatedBetRequest, @PathVariable Long id) {
         return betService.updateBet(updatedBetRequest, id);
     }
 

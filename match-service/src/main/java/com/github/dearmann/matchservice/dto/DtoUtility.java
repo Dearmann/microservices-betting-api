@@ -8,10 +8,7 @@ import com.github.dearmann.matchservice.dto.response.EventResponse;
 import com.github.dearmann.matchservice.dto.response.GameResponse;
 import com.github.dearmann.matchservice.dto.response.MatchResponse;
 import com.github.dearmann.matchservice.dto.response.TeamResponse;
-import com.github.dearmann.matchservice.model.Event;
-import com.github.dearmann.matchservice.model.Game;
-import com.github.dearmann.matchservice.model.Match;
-import com.github.dearmann.matchservice.model.Team;
+import com.github.dearmann.matchservice.model.*;
 import com.github.dearmann.matchservice.service.EventService;
 import com.github.dearmann.matchservice.service.GameService;
 import com.github.dearmann.matchservice.service.MatchService;
@@ -100,7 +97,7 @@ public class DtoUtility {
     }
 
     public Match matchRequestToMatch(MatchRequest matchRequest, Long id) {
-        return Match.builder()
+        Match match = Match.builder()
                 .id(id)
                 .winner(matchRequest.getWinner())
                 .start(matchRequest.getStart())
@@ -109,6 +106,10 @@ public class DtoUtility {
                 .team1(teamService.getTeamEntityById(matchRequest.getTeam1Id()))
                 .team2(teamService.getTeamEntityById(matchRequest.getTeam2Id()))
                 .build();
+        if (match.getWinner() == null) {
+            match.setWinner(Winner.TBD);
+        }
+        return match;
     }
 
     public MatchResponse matchToMatchResponse(Match match) {

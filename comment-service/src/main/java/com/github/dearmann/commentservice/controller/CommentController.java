@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class CommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponse createComment(@RequestBody CommentRequest commentRequest) {
+    public CommentResponse createComment(@Valid @RequestBody CommentRequest commentRequest) {
          return commentService.createComment(commentRequest);
     }
 
@@ -43,7 +44,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public CommentResponse updateComment(@RequestBody CommentRequest updatedCommentRequest, @PathVariable Long id) {
+    public CommentResponse updateComment(@Valid @RequestBody CommentRequest updatedCommentRequest, @PathVariable Long id) {
         return commentService.updateComment(updatedCommentRequest, id);
     }
 

@@ -30,6 +30,10 @@ public class CommentService {
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
         comment.setCreatedDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
+        if (commentRequest.getUserId() == null) {
+            throw new BadEntityIdException("User ID is null", HttpStatus.BAD_REQUEST);
+        }
+
         String username = webClientBuilder.build().get()
                 .uri("http://user-service/users/username/" + commentRequest.getUserId())
                 .retrieve()
