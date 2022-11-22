@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,9 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MatchRequest {
     private Winner winner;
+    @NotNull(message = "Start time is mandatory")
     private LocalDateTime start;
     private LocalDateTime end;
+    @NotNull(message = "Event ID is mandatory")
     private Long eventId;
+    @NotNull(message = "Team ID is mandatory")
     private Long team1Id;
+    @NotNull(message = "Team ID is mandatory")
     private Long team2Id;
 }

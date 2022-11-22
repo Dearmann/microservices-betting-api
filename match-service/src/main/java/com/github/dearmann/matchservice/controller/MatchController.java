@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class MatchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MatchResponse createMatch(@RequestBody MatchRequest matchRequest) {
+    public MatchResponse createMatch(@Valid @RequestBody MatchRequest matchRequest) {
         return matchService.createMatch(matchRequest);
     }
 
@@ -38,7 +39,7 @@ public class MatchController {
     }
 
     @PutMapping("/{id}")
-    public MatchResponse updateMatch(@RequestBody MatchRequest updatedMatchRequest, @PathVariable Long id) {
+    public MatchResponse updateMatch(@Valid @RequestBody MatchRequest updatedMatchRequest, @PathVariable Long id) {
         return matchService.updateMatch(updatedMatchRequest, id);
     }
 
