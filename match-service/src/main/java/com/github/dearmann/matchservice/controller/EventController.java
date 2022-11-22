@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventResponse createEvent(@RequestBody EventRequest eventRequest) {
+    public EventResponse createEvent(@Valid @RequestBody EventRequest eventRequest) {
          return eventService.createEvent(eventRequest);
     }
 
@@ -33,7 +34,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public EventResponse updateEvent(@RequestBody EventRequest updatedEventRequest, @PathVariable Long id) {
+    public EventResponse updateEvent(@Valid @RequestBody EventRequest updatedEventRequest, @PathVariable Long id) {
         return eventService.updateEvent(updatedEventRequest, id);
     }
 
