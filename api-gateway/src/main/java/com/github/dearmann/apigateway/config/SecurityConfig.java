@@ -25,16 +25,15 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity.csrf().disable()
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/eureka/**").permitAll()
                         .pathMatchers("/keycloak/**").hasRole("ADMIN")
-                        .pathMatchers(HttpMethod.GET).permitAll()
                         .pathMatchers(HttpMethod.DELETE, "/*/by-userid/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.DELETE, "/*/by-matchid/**").hasRole("ADMIN")
-                        .pathMatchers("/events/**").hasRole("ADMIN")
-                        .pathMatchers("/games/**").hasRole("ADMIN")
-                        .pathMatchers("/matches/**").hasRole("ADMIN")
-                        .pathMatchers("/teams/**").hasRole("ADMIN")
-                        .anyExchange().authenticated())
+                        .pathMatchers("/eureka/**").permitAll()
+                        .pathMatchers(HttpMethod.GET).permitAll()
+                        .pathMatchers("/bets/**").authenticated()
+                        .pathMatchers("/comments/**").authenticated()
+                        .pathMatchers("/ratings/**").authenticated()
+                        .anyExchange().hasRole("ADMIN"))
                 .oauth2ResourceServer().jwt(jwt -> jwt.jwtAuthenticationConverter(jwtRealmRoleConverter()));
         return serverHttpSecurity.build();
     }
