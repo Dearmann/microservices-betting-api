@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -25,7 +26,14 @@ public class SecurityConfig {
         serverHttpSecurity.csrf().disable()
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/eureka/**").permitAll()
-                        .pathMatchers("/games").hasRole("USER")
+                        .pathMatchers("/keycloak/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET).permitAll()
+                        .pathMatchers(HttpMethod.DELETE, "/*/by-userid/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE, "/*/by-matchid/**").hasRole("ADMIN")
+                        .pathMatchers("/events/**").hasRole("ADMIN")
+                        .pathMatchers("/games/**").hasRole("ADMIN")
+                        .pathMatchers("/matches/**").hasRole("ADMIN")
+                        .pathMatchers("/teams/**").hasRole("ADMIN")
                         .anyExchange().authenticated())
                 .oauth2ResourceServer().jwt(jwt -> jwt.jwtAuthenticationConverter(jwtRealmRoleConverter()));
         return serverHttpSecurity.build();
