@@ -33,6 +33,11 @@ public class EventController {
         return eventService.getEventById(id);
     }
 
+    @GetMapping("/by-game/{gameId}")
+    public List<EventResponse> getAllEventsByGameId(@PathVariable Long gameId) {
+        return eventService.getAllEventsByGameId(gameId);
+    }
+
     @PutMapping("/{id}")
     public EventResponse updateEvent(@Valid @RequestBody EventRequest updatedEventRequest, @PathVariable Long id) {
         return eventService.updateEvent(updatedEventRequest, id);

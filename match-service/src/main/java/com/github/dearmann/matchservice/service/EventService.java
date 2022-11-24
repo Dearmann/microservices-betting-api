@@ -21,6 +21,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final DtoUtility dtoUtility;
+    private final GameService gameService;
 
     public EventResponse createEvent(EventRequest eventRequest) {
         Event event = dtoUtility.eventRequestToEvent(eventRequest, 0L);
@@ -52,6 +53,13 @@ public class EventService {
             throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
         return event.get();
+    }
+
+    public List<EventResponse> getAllEventsByGameId(Long gameId) {
+        return eventRepository.findByGame(gameService.getGameEntityById(gameId))
+                .stream()
+                .map(dtoUtility::eventToEventResponse)
+                .toList();
     }
 
     public EventResponse updateEvent(EventRequest updatedEventRequest, Long id) {
