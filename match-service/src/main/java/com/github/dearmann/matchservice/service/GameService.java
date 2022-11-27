@@ -21,6 +21,8 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final DtoUtility dtoUtility;
+    private final EventService eventService;
+    private final TeamService teamService;
 
     public GameResponse createGame(GameRequest gameRequest) {
         Game game = dtoUtility.gameRequestToGame(gameRequest, 0L);
@@ -73,6 +75,12 @@ public class GameService {
         if (gameToDelete.isEmpty()) {
             throw new BadEntityIdException("Game not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+        gameToDelete.get().getEvents().forEach(event -> {
+            eventService.deleteEvent(event.getId());
+        });
+        gameToDelete.get().getTeams().forEach(team -> {
+            teamService.deleteTeam(team.getId());
+        });
         gameRepository.delete(gameToDelete.get());
     }
 }

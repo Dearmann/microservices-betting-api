@@ -21,6 +21,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final DtoUtility dtoUtility;
+    private final MatchService matchService;
 
     public TeamResponse createTeam(TeamRequest teamRequest) {
         Team team = dtoUtility.teamRequestToTeam(teamRequest, 0L);
@@ -76,6 +77,12 @@ public class TeamService {
         if (teamToDelete.isEmpty()) {
             throw new BadEntityIdException("Team not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+        teamToDelete.get().getMatchesAsTeam1().forEach(match -> {
+            matchService.deleteMatch(match.getId());
+        });
+        teamToDelete.get().getMatchesAsTeam2().forEach(match -> {
+            matchService.deleteMatch(match.getId());
+        });
         teamRepository.delete(teamToDelete.get());
     }
 }

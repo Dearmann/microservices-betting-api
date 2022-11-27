@@ -2,11 +2,15 @@ package com.github.dearmann.matchservice.service;
 
 import com.github.dearmann.matchservice.dto.DtoUtility;
 import com.github.dearmann.matchservice.dto.request.MatchRequest;
-import com.github.dearmann.matchservice.dto.response.*;
+import com.github.dearmann.matchservice.dto.response.BetResponse;
+import com.github.dearmann.matchservice.dto.response.CommentResponse;
+import com.github.dearmann.matchservice.dto.response.MatchResponse;
+import com.github.dearmann.matchservice.dto.response.RatingResponse;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
 import com.github.dearmann.matchservice.model.Match;
 import com.github.dearmann.matchservice.model.Winner;
 import com.github.dearmann.matchservice.repository.MatchRepository;
+import com.github.dearmann.matchservice.utility.MatchValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,24 +28,12 @@ import java.util.Optional;
 public class MatchService {
 
     private final MatchRepository matchRepository;
-    private final EventService eventService;
-    private final TeamService teamService;
     private final DtoUtility dtoUtility;
     private final WebClient.Builder webClientBuilder;
+    private final MatchValidator matchValidator;
 
     public MatchResponse createMatch(MatchRequest matchRequest) {
-        TeamResponse teamResponse1 = teamService.getTeamById(matchRequest.getTeam1Id());
-        TeamResponse teamResponse2 = teamService.getTeamById(matchRequest.getTeam2Id());
-        EventResponse eventResponse = eventService.getEventById(matchRequest.getEventId());
-
-        if (!Objects.equals(eventResponse.getGameId(), teamResponse1.getGameId())) {
-            throw new BadEntityIdException(teamResponse1.getName() + " cannot be added to " + eventResponse.getName() + ", because they are in different games",
-                    HttpStatus.BAD_REQUEST);
-        }
-        if (!Objects.equals(eventResponse.getGameId(), teamResponse2.getGameId())) {
-            throw new BadEntityIdException(teamResponse2.getName() + " cannot be added to " + eventResponse.getName() + ", because they are in different games",
-                    HttpStatus.BAD_REQUEST);
-        }
+        matchValidator.validateMatchCreation(matchRequest);
 
         Match match = dtoUtility.matchRequestToMatch(matchRequest, 0L);
         match = matchRepository.save(match);
@@ -90,7 +82,7 @@ public class MatchService {
     }
 
     public List<MatchResponse> getAllMatchesFromEventId(Long eventId) {
-        return matchRepository.findByEvent(eventService.getEventEntityById(eventId))
+        return matchRepository.findByEventId(eventId)
                 .stream()
                 .map(dtoUtility::matchToMatchResponse)
                 .toList();

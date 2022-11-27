@@ -21,7 +21,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final DtoUtility dtoUtility;
-    private final GameService gameService;
+    private final MatchService matchService;
 
     public EventResponse createEvent(EventRequest eventRequest) {
         Event event = dtoUtility.eventRequestToEvent(eventRequest, 0L);
@@ -56,7 +56,7 @@ public class EventService {
     }
 
     public List<EventResponse> getAllEventsByGameId(Long gameId) {
-        return eventRepository.findByGame(gameService.getGameEntityById(gameId))
+        return eventRepository.findByGameId(gameId)
                 .stream()
                 .map(dtoUtility::eventToEventResponse)
                 .toList();
@@ -84,6 +84,9 @@ public class EventService {
         if (eventToDelete.isEmpty()) {
             throw new BadEntityIdException("Event not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+        eventToDelete.get().getMatches().forEach(match -> {
+            matchService.deleteMatch(match.getId());
+        });
         eventRepository.delete(eventToDelete.get());
     }
 }
