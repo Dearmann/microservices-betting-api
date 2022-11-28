@@ -30,13 +30,13 @@ public class DtoUtility {
 
     private Integer validateRatingRange(Integer rating) {
         if (rating == null) {
-            return 0;
+            return 1;
         }
         else if (rating > 5) {
             return 5;
         }
-        else if (rating < 0) {
-            return 0;
+        else if (rating < 1) {
+            return 1;
         }
         else {
             return rating;
