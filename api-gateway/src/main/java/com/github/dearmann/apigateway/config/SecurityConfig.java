@@ -25,7 +25,6 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity.csrf().disable()
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/keycloak/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.DELETE, "/*/by-userid/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.DELETE, "/*/by-matchid/**").hasRole("ADMIN")
                         .pathMatchers("/eureka/**").permitAll()
