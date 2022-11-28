@@ -22,6 +22,11 @@ public class KeycloakController {
         return keyCloakService.createUser(userRequest);
     }
 
+    @GetMapping
+    public List<UserRepresentation> getAllUsers() {
+        return keyCloakService.getAllUsers();
+    }
+
     @GetMapping("/{id}")
     public UserRepresentation getUserById(@PathVariable("id") String id){
         return keyCloakService.getUserById(id);
@@ -37,18 +42,18 @@ public class KeycloakController {
         keyCloakService.updateUser(userRequest, userId);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable("userId") String userId){
-        keyCloakService.deleteUser(userId);
-    }
-
-    @GetMapping("/verification-link/{userId}")
+    @PutMapping("/verification-link/{userId}")
     public void sendEmailVerificationLink(@PathVariable("userId") String userId){
         keyCloakService.sendEmailVerificationLink(userId);
     }
 
-    @GetMapping("/reset-password/{userId}")
+    @PutMapping("/reset-password/{userId}")
     public void sendResetPassword(@PathVariable("userId") String userId){
         keyCloakService.sendResetPassword(userId);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") String userId){
+        keyCloakService.deleteUser(userId);
     }
 }

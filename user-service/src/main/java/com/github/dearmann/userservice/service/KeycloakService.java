@@ -34,6 +34,10 @@ public class KeycloakService {
         return response.getStatus();
     }
 
+    public List<UserRepresentation> getAllUsers(){
+        return realmResource.users().list();
+    }
+
     public List<UserRepresentation> getUserByUsername(String username){
         return realmResource.users().search(username, true);
     }
