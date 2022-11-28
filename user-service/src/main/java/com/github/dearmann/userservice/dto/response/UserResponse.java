@@ -18,7 +18,6 @@ public class UserResponse {
     private String firstname;
     private String lastname;
     private Long createdAtTimestamp;
-    private List<String> roles;
     private List<BetResponse> bets;
     private List<CommentResponse> comments;
     private List<RatingResponse> ratings;
