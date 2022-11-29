@@ -24,6 +24,10 @@ public class MatchValidator {
     }
 
     public void validateMatchCreation(MatchRequest matchRequest) {
+        if (Objects.equals(matchRequest.getTeam1Id(), matchRequest.getTeam2Id())) {
+            throw new RuntimeException("The team cannot fight itself");
+        }
+
         TeamResponse teamResponse1 = teamService.getTeamById(matchRequest.getTeam1Id());
         TeamResponse teamResponse2 = teamService.getTeamById(matchRequest.getTeam2Id());
         EventResponse eventResponse = eventService.getEventById(matchRequest.getEventId());
