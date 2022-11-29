@@ -98,6 +98,8 @@ public class CommentService {
         }
 
         Comment updatedComment = dtoUtility.commentRequestToComment(updatedCommentRequest, id);
+        updatedComment.setUsername(commentById.get().getUsername());
+        updatedComment.setCreatedDateTime(commentById.get().getCreatedDateTime());
 
         // Can't edit user or match of a comment
         updatedComment.setUserId(commentById.get().getUserId());
