@@ -76,7 +76,14 @@ public class BetService {
             throw new BadEntityIdException("Bet not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
+        if (betById.get().getMatchFinished()) {
+            throw new RuntimeException("Match is already finished");
+        }
+
         Bet updatedBet = dtoUtility.betRequestToBet(updatedBetRequest, id);
+        updatedBet.setCorrectPrediction(betById.get().getCorrectPrediction());
+        updatedBet.setMatchFinished(betById.get().getMatchFinished());
+
         // Can't edit user or match of a bet
         updatedBet.setUserId(betById.get().getUserId());
         updatedBet.setMatchId(betById.get().getMatchId());

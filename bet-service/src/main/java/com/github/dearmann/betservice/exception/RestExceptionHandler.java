@@ -58,4 +58,15 @@ public class RestExceptionHandler {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleException(RuntimeException exception) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST.value())
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
