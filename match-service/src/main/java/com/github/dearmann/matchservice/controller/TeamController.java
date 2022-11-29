@@ -33,6 +33,11 @@ public class TeamController {
         return teamService.getTeamById(id);
     }
 
+    @GetMapping("/by-game/{gameId}")
+    public List<TeamResponse> getAllTeamsByGameId(@PathVariable Long gameId) {
+        return teamService.getAllTeamsByGameId(gameId);
+    }
+
     @PutMapping("/{id}")
     public TeamResponse updateTeam(@Valid @RequestBody TeamRequest updatedTeamRequest, @PathVariable Long id) {
         return teamService.updateTeam(updatedTeamRequest, id);

@@ -55,6 +55,13 @@ public class TeamService {
         return team.get();
     }
 
+    public List<TeamResponse> getAllTeamsByGameId(Long gameId) {
+        return teamRepository.findByGameId(gameId)
+                .stream()
+                .map(dtoUtility::teamToTeamResponse)
+                .toList();
+    }
+
     public TeamResponse updateTeam(TeamRequest updatedTeamRequest, Long id) {
         Optional<Team> teamById = teamRepository.findById(id);
 
