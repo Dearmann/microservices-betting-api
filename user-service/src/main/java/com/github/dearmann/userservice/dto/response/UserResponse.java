@@ -12,12 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String keycloakId;
+    private String id;
     private String username;
+    private Boolean enabled;
+    private Boolean emailVerified;
     private String email;
-    private String firstname;
-    private String lastname;
-    private Long createdAtTimestamp;
+    private String firstName;
+    private String lastName;
+    private Long createdTimestamp;
     private List<BetResponse> bets;
     private List<CommentResponse> comments;
     private List<RatingResponse> ratings;

@@ -24,8 +24,8 @@ public class KeycloakService {
     public Integer createUser(UserRequest userRequest){
         UserRepresentation user = new UserRepresentation();
         user.setUsername(userRequest.getUsername());
-        user.setFirstName(userRequest.getFirstname());
-        user.setLastName(userRequest.getLastname());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
         user.setEmail(userRequest.getEmail());
         user.setCredentials(Collections.singletonList(createCredentials(userRequest.getPassword())));
         user.setEnabled(true);
@@ -57,8 +57,8 @@ public class KeycloakService {
     public void updateUser(UserRequest userRequest, String userId){
         UserRepresentation user = new UserRepresentation();
         user.setUsername(userRequest.getUsername());
-        user.setFirstName(userRequest.getFirstname());
-        user.setLastName(userRequest.getLastname());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
         user.setEmail(userRequest.getEmail());
         user.setCredentials(Collections.singletonList(createCredentials(userRequest.getPassword())));
 

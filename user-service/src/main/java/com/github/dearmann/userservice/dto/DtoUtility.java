@@ -11,12 +11,12 @@ public class DtoUtility {
 
     public UserResponse userToUserResponse(User user) {
             return UserResponse.builder()
-                    .keycloakId(user.getKeycloakId())
+                    .id(user.getKeycloakId())
                     .username(user.getUsername())
                     .email(user.getEmail())
-                    .firstname(user.getFirstname())
-                    .lastname(user.getLastname())
-                    .createdAtTimestamp(user.getCreatedAtTimestamp())
+                    .firstName(user.getFirstname())
+                    .lastName(user.getLastname())
+                    .createdTimestamp(user.getCreatedAtTimestamp())
                     .build();
     }
 }
