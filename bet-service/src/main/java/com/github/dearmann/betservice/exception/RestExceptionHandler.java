@@ -60,13 +60,13 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler
-    private ResponseEntity<ErrorResponse> handleException(RuntimeException exception) {
+    private ResponseEntity<ErrorResponse> handleException(BetException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .httpStatus(HttpStatus.BAD_REQUEST.value())
+                .httpStatus(exception.getHttpStatus().value())
                 .message(exception.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
     }
 }

@@ -4,6 +4,7 @@ import com.github.dearmann.matchservice.dto.request.MatchRequest;
 import com.github.dearmann.matchservice.dto.response.EventResponse;
 import com.github.dearmann.matchservice.dto.response.TeamResponse;
 import com.github.dearmann.matchservice.exception.BadEntityIdException;
+import com.github.dearmann.matchservice.exception.MatchException;
 import com.github.dearmann.matchservice.service.EventService;
 import com.github.dearmann.matchservice.service.TeamService;
 import org.springframework.context.annotation.Lazy;
@@ -25,7 +26,7 @@ public class MatchValidator {
 
     public void validateMatchCreation(MatchRequest matchRequest) {
         if (Objects.equals(matchRequest.getTeam1Id(), matchRequest.getTeam2Id())) {
-            throw new RuntimeException("The team cannot fight itself");
+            throw new MatchException("The team cannot fight itself", HttpStatus.BAD_REQUEST);
         }
 
         TeamResponse teamResponse1 = teamService.getTeamById(matchRequest.getTeam1Id());

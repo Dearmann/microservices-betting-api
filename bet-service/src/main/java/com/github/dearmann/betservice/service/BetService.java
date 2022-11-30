@@ -4,6 +4,7 @@ import com.github.dearmann.betservice.dto.DtoUtility;
 import com.github.dearmann.betservice.dto.request.BetRequest;
 import com.github.dearmann.betservice.dto.response.BetResponse;
 import com.github.dearmann.betservice.exception.BadEntityIdException;
+import com.github.dearmann.betservice.exception.BetException;
 import com.github.dearmann.betservice.model.Bet;
 import com.github.dearmann.betservice.repository.BetRepository;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class BetService {
         }
 
         if (betById.get().getMatchFinished()) {
-            throw new RuntimeException("Match is already finished");
+            throw new BetException("Match is already finished", HttpStatus.BAD_REQUEST);
         }
 
         Bet updatedBet = dtoUtility.betRequestToBet(updatedBetRequest, id);
