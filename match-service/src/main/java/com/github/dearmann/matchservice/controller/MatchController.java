@@ -33,6 +33,11 @@ public class MatchController {
         return matchService.getMatchById(id);
     }
 
+    @GetMapping("/interactions/{id}")
+    public MatchResponse getMatchWithInteractionsById(@PathVariable Long id) {
+        return matchService.getMatchWithInteractionsById(id);
+    }
+
     @GetMapping("/by-event/{eventId}")
     public List<MatchResponse> getAllMatchesFromEvent(@PathVariable Long eventId) {
         return matchService.getAllMatchesFromEventId(eventId);

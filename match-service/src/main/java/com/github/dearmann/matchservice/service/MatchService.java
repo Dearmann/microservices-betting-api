@@ -55,7 +55,11 @@ public class MatchService {
             throw new BadEntityIdException("Match not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        MatchResponse matchResponse = dtoUtility.matchToMatchResponse(match.get());
+        return dtoUtility.matchToMatchResponse(match.get());
+    }
+
+    public MatchResponse getMatchWithInteractionsById(Long id) {
+        MatchResponse matchResponse = getMatchById(id);
 
         BetResponse[] betArray = webClientBuilder.build().get()
                 .uri("http://bet-service/bets/by-matchid/" + id)
