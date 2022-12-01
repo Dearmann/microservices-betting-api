@@ -19,8 +19,9 @@ public class CommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponse createComment(@Valid @RequestBody CommentRequest commentRequest) {
-         return commentService.createComment(commentRequest);
+    public CommentResponse createComment(@Valid @RequestBody CommentRequest commentRequest,
+                                         @RequestHeader("user-id") String jwtUserId) {
+         return commentService.createComment(commentRequest, jwtUserId);
     }
 
     @GetMapping
@@ -44,13 +45,16 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public CommentResponse updateComment(@Valid @RequestBody CommentRequest updatedCommentRequest, @PathVariable Long id) {
-        return commentService.updateComment(updatedCommentRequest, id);
+    public CommentResponse updateComment(@Valid @RequestBody CommentRequest updatedCommentRequest,
+                                         @PathVariable Long id,
+                                         @RequestHeader("user-id") String jwtUserId) {
+        return commentService.updateComment(updatedCommentRequest, id, jwtUserId);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    public void deleteComment(@PathVariable Long id,
+                              @RequestHeader("user-id") String jwtUserId) {
+        commentService.deleteComment(id, jwtUserId);
     }
 
     @DeleteMapping("/by-userid/{userId}")

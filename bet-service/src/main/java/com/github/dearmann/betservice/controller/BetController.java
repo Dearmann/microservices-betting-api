@@ -19,8 +19,9 @@ public class BetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BetResponse createBet(@Valid @RequestBody BetRequest betRequest) {
-         return betService.createBet(betRequest);
+    public BetResponse createBet(@Valid @RequestBody BetRequest betRequest,
+                                 @RequestHeader("user-id") String jwtUserId) {
+         return betService.createBet(betRequest, jwtUserId);
     }
 
     @GetMapping
@@ -44,8 +45,10 @@ public class BetController {
     }
 
     @PutMapping("/{id}")
-    public BetResponse updateBet(@Valid @RequestBody BetRequest updatedBetRequest, @PathVariable Long id) {
-        return betService.updateBet(updatedBetRequest, id);
+    public BetResponse updateBet(@Valid @RequestBody BetRequest updatedBetRequest,
+                                 @PathVariable Long id,
+                                 @RequestHeader("user-id") String jwtUserId) {
+        return betService.updateBet(updatedBetRequest, id, jwtUserId);
     }
 
     @PutMapping("/result")
@@ -55,8 +58,9 @@ public class BetController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBet(@PathVariable Long id) {
-        betService.deleteBet(id);
+    public void deleteBet(@PathVariable Long id,
+                          @RequestHeader("user-id") String jwtUserId) {
+        betService.deleteBet(id, jwtUserId);
     }
 
     @DeleteMapping("/by-userid/{userId}")

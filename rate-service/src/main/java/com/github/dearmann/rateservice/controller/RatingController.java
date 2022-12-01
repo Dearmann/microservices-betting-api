@@ -19,8 +19,9 @@ public class RatingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RatingResponse createRating(@Valid @RequestBody RatingRequest ratingRequest) {
-         return ratingService.createRating(ratingRequest);
+    public RatingResponse createRating(@Valid @RequestBody RatingRequest ratingRequest,
+                                       @RequestHeader("user-id") String jwtUserId) {
+         return ratingService.createRating(ratingRequest, jwtUserId);
     }
 
     @GetMapping
@@ -44,13 +45,16 @@ public class RatingController {
     }
 
     @PutMapping("/{id}")
-    public RatingResponse updateRating(@Valid @RequestBody RatingRequest updatedRatingRequest, @PathVariable Long id) {
-        return ratingService.updateRating(updatedRatingRequest, id);
+    public RatingResponse updateRating(@Valid @RequestBody RatingRequest updatedRatingRequest,
+                                       @PathVariable Long id,
+                                       @RequestHeader("user-id") String jwtUserId) {
+        return ratingService.updateRating(updatedRatingRequest, id, jwtUserId);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteRating(@PathVariable Long id) {
-        ratingService.deleteRating(id);
+    public void deleteRating(@PathVariable Long id,
+                             @RequestHeader("user-id") String jwtUserId) {
+        ratingService.deleteRating(id, jwtUserId);
     }
 
     @DeleteMapping("/by-userid/{userId}")
