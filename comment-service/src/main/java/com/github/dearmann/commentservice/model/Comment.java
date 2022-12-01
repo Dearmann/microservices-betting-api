@@ -26,7 +26,7 @@ public class Comment {
     private String userId;
     private String username;
     private Long matchId;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String message;
     private LocalDateTime createdDateTime;
 }

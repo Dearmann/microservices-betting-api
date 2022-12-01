@@ -64,4 +64,15 @@ public class RestExceptionHandler {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleException(CommentException exception) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(exception.getHttpStatus().value())
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
+    }
 }

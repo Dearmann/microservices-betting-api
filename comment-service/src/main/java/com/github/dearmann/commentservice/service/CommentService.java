@@ -4,6 +4,7 @@ import com.github.dearmann.commentservice.dto.DtoUtility;
 import com.github.dearmann.commentservice.dto.request.CommentRequest;
 import com.github.dearmann.commentservice.dto.response.CommentResponse;
 import com.github.dearmann.commentservice.exception.BadEntityIdException;
+import com.github.dearmann.commentservice.exception.CommentException;
 import com.github.dearmann.commentservice.model.Comment;
 import com.github.dearmann.commentservice.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final DtoUtility dtoUtility;
     private final WebClient.Builder webClientBuilder;
+    private final Integer maxMessageLength = 500;
 
     public CommentResponse createComment(CommentRequest commentRequest) {
+        if (commentRequest.getMessage().length() > 500) {
+            throw new CommentException("Message exceeding " + maxMessageLength + " characters", HttpStatus.BAD_REQUEST);
+        }
+
         Comment comment = dtoUtility.commentRequestToComment(commentRequest, 0L);
         comment.setCreatedDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
@@ -95,6 +101,10 @@ public class CommentService {
 
         if (commentById.isEmpty()) {
             throw new BadEntityIdException("Comment not found ID - " + id, HttpStatus.NOT_FOUND);
+        }
+
+        if (updatedCommentRequest.getMessage().length() > 500) {
+            throw new CommentException("Message exceeding " + maxMessageLength + " characters", HttpStatus.BAD_REQUEST);
         }
 
         Comment updatedComment = dtoUtility.commentRequestToComment(updatedCommentRequest, id);
