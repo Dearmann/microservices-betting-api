@@ -92,4 +92,13 @@ public class TeamService {
         });
         teamRepository.delete(teamToDelete.get());
     }
+
+    public void deleteTeamNotCascading(Long id) {
+        Optional<Team> teamToDelete = teamRepository.findById(id);
+
+        if (teamToDelete.isEmpty()) {
+            throw new BadEntityIdException("Team not found ID - " + id, HttpStatus.NOT_FOUND);
+        }
+        teamRepository.delete(teamToDelete.get());
+    }
 }

@@ -79,7 +79,7 @@ public class GameService {
             eventService.deleteEvent(event.getId());
         });
         gameToDelete.get().getTeams().forEach(team -> {
-            teamService.deleteTeam(team.getId());
+            teamService.deleteTeamNotCascading(team.getId());
         });
         gameRepository.delete(gameToDelete.get());
     }
