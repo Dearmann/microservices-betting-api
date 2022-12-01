@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,7 +29,9 @@ public class CommentService {
     private final WebClient.Builder webClientBuilder;
     private final Integer maxMessageLength = 500;
 
-    public CommentResponse createComment(CommentRequest commentRequest) {
+    public CommentResponse createComment(CommentRequest commentRequest, String jwtUserId) {
+        validateJWTSubject(commentRequest.getUserId(), jwtUserId);
+
         if (commentRequest.getMessage().length() > 500) {
             throw new CommentException("Message exceeding " + maxMessageLength + " characters", HttpStatus.BAD_REQUEST);
         }
@@ -96,7 +99,9 @@ public class CommentService {
                 .toList();
     }
 
-    public CommentResponse updateComment(CommentRequest updatedCommentRequest, Long id) {
+    public CommentResponse updateComment(CommentRequest updatedCommentRequest, Long id, String jwtUserId) {
+        validateJWTSubject(updatedCommentRequest.getUserId(), jwtUserId);
+
         Optional<Comment> commentById = commentRepository.findById(id);
 
         if (commentById.isEmpty()) {
@@ -119,12 +124,14 @@ public class CommentService {
         return dtoUtility.commentToCommentResponse(updatedComment);
     }
 
-    public void deleteComment(Long id) {
+    public void deleteComment(Long id, String jwtUserId) {
         Optional<Comment> commentToDelete = commentRepository.findById(id);
 
         if (commentToDelete.isEmpty()) {
             throw new BadEntityIdException("Comment not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+        validateJWTSubject(commentToDelete.get().getUserId(), jwtUserId);
+
         commentRepository.delete(commentToDelete.get());
     }
 
@@ -136,5 +143,11 @@ public class CommentService {
     public void deleteCommentsByMatchId(Long matchId) {
         List<Comment> commentsByMatchId = commentRepository.findByMatchId(matchId);
         commentRepository.deleteAll(commentsByMatchId);
+    }
+
+    private void validateJWTSubject(String requestUserId, String jwtUserId) {
+        if (!Objects.equals(requestUserId, jwtUserId)) {
+            throw new CommentException("JWT subject is different from request user ID", HttpStatus.CONFLICT);
+        }
     }
 }

@@ -24,7 +24,9 @@ public class BetService {
     private final BetRepository betRepository;
     private final DtoUtility dtoUtility;
 
-    public BetResponse createBet(BetRequest betRequest) {
+    public BetResponse createBet(BetRequest betRequest, String jwtUserId) {
+        validateJWTSubject(betRequest.getUserId(), jwtUserId);
+
         Bet bet = dtoUtility.betRequestToBet(betRequest, 0L);
         bet = betRepository.save(bet);
 
@@ -70,7 +72,9 @@ public class BetService {
                 .toList();
     }
 
-    public BetResponse updateBet(BetRequest updatedBetRequest, Long id) {
+    public BetResponse updateBet(BetRequest updatedBetRequest, Long id, String jwtUserId) {
+        validateJWTSubject(updatedBetRequest.getUserId(), jwtUserId);
+
         Optional<Bet> betById = betRepository.findById(id);
 
         if (betById.isEmpty()) {
@@ -102,12 +106,14 @@ public class BetService {
         }
     }
 
-    public void deleteBet(Long id) {
+    public void deleteBet(Long id, String jwtUserId) {
         Optional<Bet> betToDelete = betRepository.findById(id);
 
         if (betToDelete.isEmpty()) {
             throw new BadEntityIdException("Bet not found ID - " + id, HttpStatus.NOT_FOUND);
         }
+        validateJWTSubject(betToDelete.get().getUserId(), jwtUserId);
+
         betRepository.delete(betToDelete.get());
     }
 
@@ -119,5 +125,11 @@ public class BetService {
     public void deleteBetsByMatchId(Long matchId) {
         List<Bet> betsByMatchId = betRepository.findByMatchId(matchId);
         betRepository.deleteAll(betsByMatchId);
+    }
+
+    private void validateJWTSubject(String requestUserId, String jwtUserId) {
+        if (!Objects.equals(requestUserId, jwtUserId)) {
+            throw new BetException("JWT subject is different from request user ID", HttpStatus.CONFLICT);
+        }
     }
 }
