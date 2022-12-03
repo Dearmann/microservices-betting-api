@@ -1,16 +1,19 @@
 package com.github.dearmann.userservice.service;
 
 import com.github.dearmann.userservice.dto.request.UserRequest;
+import com.github.dearmann.userservice.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,18 +57,24 @@ public class KeycloakService {
         return realmResource.users().get(userId).toRepresentation();
     }
 
-    public void updateUser(UserRequest userRequest, String userId){
+    public void updateUser(UserRequest userRequest, String userId, String jwtUserId){
+        validateJWTSubject(userId, jwtUserId);
+
         UserRepresentation user = new UserRepresentation();
-        user.setUsername(userRequest.getUsername());
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         user.setEmail(userRequest.getEmail());
-        user.setCredentials(Collections.singletonList(createCredentials(userRequest.getPassword())));
 
         realmResource.users().get(userId).update(user);
     }
 
-    public void deleteUser(String userId){
+    public void deleteUser(String userId, String jwtUserId){
+        validateJWTSubject(userId, jwtUserId);
+        userService.deleteUserInteractions(userId);
+        realmResource.users().get(userId).remove();
+    }
+
+    public void privilegedDeleteUser(String userId) {
         userService.deleteUserInteractions(userId);
         realmResource.users().get(userId).remove();
     }
@@ -74,7 +83,8 @@ public class KeycloakService {
         realmResource.users().get(userId).sendVerifyEmail();
     }
 
-    public void sendResetPassword(String userId){
+    public void sendResetPassword(String userId, String jwtUserId){
+        validateJWTSubject(userId, jwtUserId);
         realmResource.users().get(userId).executeActionsEmail(List.of("UPDATE_PASSWORD"));
     }
 
@@ -84,5 +94,11 @@ public class KeycloakService {
         credentials.setType(CredentialRepresentation.PASSWORD);
         credentials.setValue(password);
         return credentials;
+    }
+
+    private void validateJWTSubject(String requestUserId, String jwtUserId) {
+        if (!Objects.equals(requestUserId, jwtUserId)) {
+            throw new UserException("JWT subject is different from request user ID", HttpStatus.CONFLICT);
+        }
     }
 }

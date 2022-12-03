@@ -32,6 +32,9 @@ public class SecurityConfig {
                         .pathMatchers("/bets/**").authenticated()
                         .pathMatchers("/comments/**").authenticated()
                         .pathMatchers("/ratings/**").authenticated()
+                        .pathMatchers("/keycloak/admin/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/keycloak/*").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/keycloak/*").authenticated()
                         .anyExchange().hasRole("ADMIN"))
                 .oauth2ResourceServer().jwt(jwt -> jwt.jwtAuthenticationConverter(jwtRealmRoleConverter()));
         return serverHttpSecurity.build();

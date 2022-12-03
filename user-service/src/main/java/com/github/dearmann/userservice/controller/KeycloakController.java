@@ -38,8 +38,10 @@ public class KeycloakController {
     }
 
     @PutMapping("/{userId}")
-    public void updateUser(@RequestBody UserRequest userRequest, @PathVariable("userId") String userId){
-        keyCloakService.updateUser(userRequest, userId);
+    public void updateUser(@RequestBody UserRequest userRequest,
+                           @PathVariable("userId") String userId,
+                           @RequestHeader("user-id") String jwtUserId){
+        keyCloakService.updateUser(userRequest, userId, jwtUserId);
     }
 
     @PutMapping("/verification-link/{userId}")
@@ -48,12 +50,19 @@ public class KeycloakController {
     }
 
     @PutMapping("/reset-password/{userId}")
-    public void sendResetPassword(@PathVariable("userId") String userId){
-        keyCloakService.sendResetPassword(userId);
+    public void sendResetPassword(@PathVariable("userId") String userId,
+                                  @RequestHeader("user-id") String jwtUserId){
+        keyCloakService.sendResetPassword(userId, jwtUserId);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable("userId") String userId){
-        keyCloakService.deleteUser(userId);
+    public void deleteUser(@PathVariable("userId") String userId,
+                           @RequestHeader("user-id") String jwtUserId){
+        keyCloakService.deleteUser(userId, jwtUserId);
+    }
+
+    @DeleteMapping("/admin/{userId}")
+    public void privilegedDeleteUser(@PathVariable("userId") String userId){
+        keyCloakService.privilegedDeleteUser(userId);
     }
 }

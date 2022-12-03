@@ -43,4 +43,15 @@ public class RestExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleException(UserException exception) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(exception.getHttpStatus().value())
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
+    }
 }
