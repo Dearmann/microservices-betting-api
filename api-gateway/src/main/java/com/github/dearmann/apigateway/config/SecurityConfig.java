@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .pathMatchers("/comments/**").authenticated()
                         .pathMatchers("/ratings/**").authenticated()
                         .pathMatchers("/keycloak/admin/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/keycloak/reset-password/*").authenticated()
                         .pathMatchers(HttpMethod.PUT, "/keycloak/*").authenticated()
                         .pathMatchers(HttpMethod.DELETE, "/keycloak/*").authenticated()
                         .anyExchange().hasRole("ADMIN"))
