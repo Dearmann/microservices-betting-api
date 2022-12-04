@@ -149,10 +149,10 @@ public class BetService {
                 .block();
         assert matchResponse != null;
         if (LocalDateTime.now().isAfter(matchResponse.getStart())) {
-            throw new BetException("You cannot bet for a match that has already started", HttpStatus.NOT_ACCEPTABLE);
+            throw new BetException("You cannot bet on a match that has already started", HttpStatus.NOT_ACCEPTABLE);
         }
         if (matchResponse.getWinner() != Winner.TBD) {
-            throw new BetException("You cannot bet for a match that has already ended", HttpStatus.NOT_ACCEPTABLE);
+            throw new BetException("You cannot bet on a match that has already ended", HttpStatus.NOT_ACCEPTABLE);
         }
     }
 }
