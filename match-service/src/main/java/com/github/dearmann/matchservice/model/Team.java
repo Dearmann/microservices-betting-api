@@ -16,13 +16,14 @@ import java.util.List;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "game"})})
 public class Team {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     private String logoUrl;
