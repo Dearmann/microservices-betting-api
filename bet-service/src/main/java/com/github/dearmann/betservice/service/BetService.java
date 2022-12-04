@@ -3,6 +3,8 @@ package com.github.dearmann.betservice.service;
 import com.github.dearmann.betservice.dto.DtoUtility;
 import com.github.dearmann.betservice.dto.request.BetRequest;
 import com.github.dearmann.betservice.dto.response.BetResponse;
+import com.github.dearmann.betservice.dto.response.MatchResponse;
+import com.github.dearmann.betservice.dto.response.Winner;
 import com.github.dearmann.betservice.exception.BadEntityIdException;
 import com.github.dearmann.betservice.exception.BetException;
 import com.github.dearmann.betservice.model.Bet;
@@ -11,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,9 +27,11 @@ public class BetService {
 
     private final BetRepository betRepository;
     private final DtoUtility dtoUtility;
+    private final WebClient.Builder webClientBuilder;
 
     public BetResponse createBet(BetRequest betRequest, String jwtUserId) {
         validateJWTSubject(betRequest.getUserId(), jwtUserId);
+        validateMatch(betRequest);
 
         Bet bet = dtoUtility.betRequestToBet(betRequest, 0L);
         bet = betRepository.save(bet);
@@ -74,6 +80,7 @@ public class BetService {
 
     public BetResponse updateBet(BetRequest updatedBetRequest, Long id, String jwtUserId) {
         validateJWTSubject(updatedBetRequest.getUserId(), jwtUserId);
+        validateMatch(updatedBetRequest);
 
         Optional<Bet> betById = betRepository.findById(id);
 
@@ -130,6 +137,22 @@ public class BetService {
     private void validateJWTSubject(String requestUserId, String jwtUserId) {
         if (!Objects.equals(requestUserId, jwtUserId)) {
             throw new BetException("JWT subject is different from request user ID", HttpStatus.CONFLICT);
+        }
+    }
+
+    private void validateMatch(BetRequest betRequest) {
+        MatchResponse matchResponse = webClientBuilder.build()
+                .get()
+                .uri("http://match-service/matches/" + betRequest.getMatchId())
+                .retrieve()
+                .bodyToMono(MatchResponse.class)
+                .block();
+        assert matchResponse != null;
+        if (LocalDateTime.now().isAfter(matchResponse.getStart())) {
+            throw new BetException("You cannot bet for a match that has already started", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (matchResponse.getWinner() != Winner.TBD) {
+            throw new BetException("You cannot bet for a match that has already ended", HttpStatus.NOT_ACCEPTABLE);
         }
     }
 }
