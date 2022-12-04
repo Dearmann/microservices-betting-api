@@ -88,10 +88,6 @@ public class BetService {
             throw new BadEntityIdException("Bet not found ID - " + id, HttpStatus.NOT_FOUND);
         }
 
-        if (betById.get().getMatchFinished()) {
-            throw new BetException("Match is already finished", HttpStatus.BAD_REQUEST);
-        }
-
         Bet updatedBet = dtoUtility.betRequestToBet(updatedBetRequest, id);
         updatedBet.setCorrectPrediction(betById.get().getCorrectPrediction());
         updatedBet.setMatchFinished(betById.get().getMatchFinished());
