@@ -16,7 +16,7 @@ import java.util.List;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "game"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "game_id"})})
 public class Team {
 
     @Id
