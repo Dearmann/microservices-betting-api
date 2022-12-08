@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
 
   discovery-server:
-    image: discovery-server:1.0
+    image: dearmann/discovery-server:1.0
     container_name: discovery-server
     ports:
       - 8761:8761
@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
 
   api-gateway:
-    image: api-gateway:1.0
+    image: dearmann/api-gateway:1.0
     container_name: api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -61,7 +61,7 @@ services:
 
   match-service:
     container_name: match-service
-    image: match-service:1.0
+    image: dearmann/match-service:1.0
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -70,7 +70,7 @@ services:
 
   user-service:
     container_name: user-service
-    image: user-service:1.0
+    image: dearmann/user-service:1.0
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - KEYCLOAK_URL=http://keycloak:8080
@@ -87,7 +87,7 @@ services:
 
   bet-service:
     container_name: bet-service
-    image: bet-service:1.0
+    image: dearmann/bet-service:1.0
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -98,7 +98,7 @@ services:
 
   comment-service:
     container_name: comment-service
-    image: comment-service:1.0
+    image: dearmann/comment-service:1.0
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -109,7 +109,7 @@ services:
 
   rate-service:
     container_name: rate-service
-    image: rate-service:1.0
+    image: dearmann/rate-service:1.0
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -119,8 +119,8 @@ services:
     restart: unless-stopped
 
   frontend:
-    container_name: frontend
-    image: frontend:1.0
+    container_name: betting-app-ui
+    image: dearmann/betting-app-ui:1.0
     ports:
       - 80:80
     environment: 
