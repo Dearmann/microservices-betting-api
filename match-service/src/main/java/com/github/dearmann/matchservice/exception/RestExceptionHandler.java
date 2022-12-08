@@ -57,10 +57,12 @@ public class RestExceptionHandler {
 
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(SQLIntegrityConstraintViolationException exception) {
+        String[] splitMessage = exception.getLocalizedMessage().split(" ");
+        String message = splitMessage[0] + " " + splitMessage[1];
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST.value())
-                .message(exception.getLocalizedMessage())
+                .message(message)
                 .timeStamp(LocalDateTime.now())
                 .build();
 
