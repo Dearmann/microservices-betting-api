@@ -9,3 +9,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/betting-app
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
