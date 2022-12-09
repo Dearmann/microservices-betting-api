@@ -39,15 +39,21 @@ class TeamIntegrationTests extends BaseTest {
     private GameRepository gameRepository;
     @Autowired
     private DtoUtility dtoUtility;
+    private Game game;
 
     @BeforeEach
     void setUp() {
         teamRepository.deleteAll();
+        gameRepository.deleteAll();
+        game = gameRepository.save(Game.builder()
+                .id(0L)
+                .name("League of Legends")
+                .build());
     }
 
     @Test
     void shouldCreateTeam() throws Exception {
-        TeamRequest teamRequest = getTeamRequest();
+        TeamRequest teamRequest = getTeamRequest("Team");
         String teamRequestJSON = objectMapper.writeValueAsString(teamRequest);
 
         mockMvc.perform(post("/teams")
@@ -55,6 +61,7 @@ class TeamIntegrationTests extends BaseTest {
                         .content(teamRequestJSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(teamRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(teamRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.gameId", is(teamRequest.getGameId().intValue())))
                 .andExpect(jsonPath("$.matchesAsTeam1", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.matchesAsTeam2", is(Collections.emptyList())))
@@ -65,8 +72,8 @@ class TeamIntegrationTests extends BaseTest {
     @Test
     void shouldGetAllTeams() throws Exception {
         List<Team> teamList = new ArrayList<>();
-        teamList.add(dtoUtility.teamRequestToTeam(getTeamRequest(), 0L));
-        teamList.add(dtoUtility.teamRequestToTeam(getTeamRequest(), 0L));
+        teamList.add(dtoUtility.teamRequestToTeam(getTeamRequest("Team-1"), 0L));
+        teamList.add(dtoUtility.teamRequestToTeam(getTeamRequest("Team-2"), 0L));
         teamRepository.saveAll(teamList);
 
         mockMvc.perform(get("/teams"))
@@ -77,12 +84,13 @@ class TeamIntegrationTests extends BaseTest {
 
     @Test
     void shouldGetTeamById() throws Exception {
-        TeamRequest teamRequest = getTeamRequest();
+        TeamRequest teamRequest = getTeamRequest("Team");
         Team savedTeam = teamRepository.save(dtoUtility.teamRequestToTeam(teamRequest, 0L));
 
         mockMvc.perform(get("/teams/{id}", savedTeam.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(teamRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(teamRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.gameId", is(teamRequest.getGameId().intValue())))
                 .andExpect(jsonPath("$.matchesAsTeam1", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.matchesAsTeam2", is(Collections.emptyList())))
@@ -90,7 +98,7 @@ class TeamIntegrationTests extends BaseTest {
     }
 
     @Test
-    void shouldReturnStatusNotFoundWhenGettingAllTeams() throws Exception {
+    void shouldReturnStatusNotFoundWhenGettingTeamById() throws Exception {
         mockMvc.perform(get("/teams/{id}", 1L))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -98,11 +106,9 @@ class TeamIntegrationTests extends BaseTest {
 
     @Test
     void shouldUpdateTeam() throws Exception {
-        TeamRequest teamRequest = getTeamRequest();
+        TeamRequest teamRequest = getTeamRequest("Team");
         Team savedTeam = teamRepository.save(dtoUtility.teamRequestToTeam(teamRequest, 0L));
-        TeamRequest updatedTeamRequest = getTeamRequest();
-        updatedTeamRequest.setName("Updated test team");
-//        updatedTeamRequest.setGameId(11L);
+        TeamRequest updatedTeamRequest = getTeamRequest("Team-updated");
         String updatedTeamRequestJSON = objectMapper.writeValueAsString(updatedTeamRequest);
 
         mockMvc.perform(put("/teams/{id}", savedTeam.getId())
@@ -110,6 +116,7 @@ class TeamIntegrationTests extends BaseTest {
                         .content(updatedTeamRequestJSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(updatedTeamRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(updatedTeamRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.gameId", is(teamRequest.getGameId().intValue())))
                 .andExpect(jsonPath("$.matchesAsTeam1", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.matchesAsTeam2", is(Collections.emptyList())))
@@ -118,9 +125,8 @@ class TeamIntegrationTests extends BaseTest {
 
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingTeam() throws Exception {
-        TeamRequest updatedTeamRequest = getTeamRequest();
-        updatedTeamRequest.setName("Updated test team");
-        updatedTeamRequest.setGameId(11L);
+        TeamRequest updatedTeamRequest = getTeamRequest("Team-updated");
+        updatedTeamRequest.setGameId(Long.MAX_VALUE);
         String updatedTeamRequestJSON = objectMapper.writeValueAsString(updatedTeamRequest);
 
         mockMvc.perform(put("/teams/{id}", 1L)
@@ -132,7 +138,7 @@ class TeamIntegrationTests extends BaseTest {
 
     @Test
     void shouldDeleteTeam() throws Exception {
-        TeamRequest teamRequest = getTeamRequest();
+        TeamRequest teamRequest = getTeamRequest("Team");
         Team savedTeam = teamRepository.save(dtoUtility.teamRequestToTeam(teamRequest, 0L));
 
         mockMvc.perform(delete("/teams/{id}", savedTeam.getId()))
@@ -147,15 +153,9 @@ class TeamIntegrationTests extends BaseTest {
                 .andDo(print());
     }
 
-    private TeamRequest getTeamRequest() {
-        Game game = Game.builder()
-                .id(0L)
-                .name("League of Legends")
-                .build();
-        game = gameRepository.save(game);
-
+    private TeamRequest getTeamRequest(String teamName) {
         return TeamRequest.builder()
-                .name("Test team")
+                .name(teamName)
                 .gameId(game.getId())
                 .build();
     }

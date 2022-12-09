@@ -41,15 +41,21 @@ class EventIntegrationTests extends BaseTest {
     private GameRepository gameRepository;
     @Autowired
     private DtoUtility dtoUtility;
+    private Game game;
 
     @BeforeEach
     void setUp() {
         eventRepository.deleteAll();
+        gameRepository.deleteAll();
+        game = gameRepository.save(Game.builder()
+                .id(0L)
+                .name("League of Legends")
+                .build());
     }
 
     @Test
     void shouldCreateEvent() throws Exception {
-        EventRequest eventRequest = getEventRequest();
+        EventRequest eventRequest = getEventRequest("Event");
         String eventRequestJSON = objectMapper.writeValueAsString(eventRequest);
 
         mockMvc.perform(post("/events")
@@ -70,8 +76,8 @@ class EventIntegrationTests extends BaseTest {
     @Test
     void shouldGetAllEvents() throws Exception {
         List<Event> eventList = new ArrayList<>();
-        eventList.add(dtoUtility.eventRequestToEvent(getEventRequest(), 0L));
-        eventList.add(dtoUtility.eventRequestToEvent(getEventRequest(), 0L));
+        eventList.add(dtoUtility.eventRequestToEvent(getEventRequest("Event-1"), 0L));
+        eventList.add(dtoUtility.eventRequestToEvent(getEventRequest("Event-2"), 0L));
         eventRepository.saveAll(eventList);
 
         mockMvc.perform(get("/events"))
@@ -82,7 +88,7 @@ class EventIntegrationTests extends BaseTest {
 
     @Test
     void shouldGetEventById() throws Exception {
-        EventRequest eventRequest = getEventRequest();
+        EventRequest eventRequest = getEventRequest("Event");
         Event savedEvent = eventRepository.save(dtoUtility.eventRequestToEvent(eventRequest, 0L));
 
         mockMvc.perform(get("/events/{id}", savedEvent.getId()))
@@ -98,7 +104,7 @@ class EventIntegrationTests extends BaseTest {
     }
 
     @Test
-    void shouldReturnStatusNotFoundWhenGettingAllEvents() throws Exception {
+    void shouldReturnStatusNotFoundWhenGettingEventById() throws Exception {
         mockMvc.perform(get("/events/{id}", 1L))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -106,15 +112,13 @@ class EventIntegrationTests extends BaseTest {
 
     @Test
     void shouldUpdateEvent() throws Exception {
-        EventRequest eventRequest = getEventRequest();
+        EventRequest eventRequest = getEventRequest("Event");
         Event savedEvent = eventRepository.save(dtoUtility.eventRequestToEvent(eventRequest, 0L));
-        EventRequest updatedEventRequest = getEventRequest();
-        updatedEventRequest.setName("Updated test event");
+        EventRequest updatedEventRequest = getEventRequest("Event-updated");
         updatedEventRequest.setRegion("EU");
         updatedEventRequest.setSeason(2);
         updatedEventRequest.setStart(LocalDateTime.parse("2023-11-08T21:00:00"));
         updatedEventRequest.setEnd(LocalDateTime.parse("2023-12-08T21:00:00"));
-        updatedEventRequest.setGameId(1L);
         String updatedEventRequestJSON = objectMapper.writeValueAsString(updatedEventRequest);
 
         mockMvc.perform(put("/events/{id}", savedEvent.getId())
@@ -133,13 +137,12 @@ class EventIntegrationTests extends BaseTest {
 
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingEvent() throws Exception {
-        EventRequest updatedEventRequest = getEventRequest();
-        updatedEventRequest.setName("Updated test event");
+        EventRequest updatedEventRequest = getEventRequest("Event-updated");
         updatedEventRequest.setRegion("EU");
         updatedEventRequest.setSeason(2);
         updatedEventRequest.setStart(LocalDateTime.parse("2023-11-08T21:00:00"));
         updatedEventRequest.setEnd(LocalDateTime.parse("2023-12-08T21:00:00"));
-        updatedEventRequest.setGameId(1L);
+        updatedEventRequest.setGameId(Long.MAX_VALUE);
         String updatedEventRequestJSON = objectMapper.writeValueAsString(updatedEventRequest);
 
         mockMvc.perform(put("/events/{id}", 1L)
@@ -151,7 +154,7 @@ class EventIntegrationTests extends BaseTest {
 
     @Test
     void shouldDeleteEvent() throws Exception {
-        EventRequest eventRequest = getEventRequest();
+        EventRequest eventRequest = getEventRequest("Event");
         Event savedEvent = eventRepository.save(dtoUtility.eventRequestToEvent(eventRequest, 0L));
 
         mockMvc.perform(delete("/events/{id}", savedEvent.getId()))
@@ -166,15 +169,9 @@ class EventIntegrationTests extends BaseTest {
                 .andDo(print());
     }
 
-    private EventRequest getEventRequest() {
-        Game game = Game.builder()
-                .id(0L)
-                .name("League of Legends")
-                .build();
-        game = gameRepository.save(game);
-
+    private EventRequest getEventRequest(String eventName) {
         return EventRequest.builder()
-                .name("Test event")
+                .name(eventName)
                 .region("Global")
                 .season(1)
                 .start(LocalDateTime.parse("2022-11-08T21:00:00"))

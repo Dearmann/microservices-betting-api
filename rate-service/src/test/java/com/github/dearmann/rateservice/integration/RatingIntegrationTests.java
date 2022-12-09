@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,14 +43,15 @@ class RatingIntegrationTests extends BaseTest {
 
     @Test
     void shouldCreateRating() throws Exception {
-        RatingRequest ratingRequest = getRatingRequest();
+        RatingRequest ratingRequest = getRatingRequest("userID");
         String ratingRequestJSON = objectMapper.writeValueAsString(ratingRequest);
 
         mockMvc.perform(post("/ratings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(ratingRequestJSON))
+                        .content(ratingRequestJSON)
+                        .header("user-id", ratingRequest.getUserId()))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId().intValue())))
+                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId())))
                 .andExpect(jsonPath("$.matchId", is(ratingRequest.getMatchId().intValue())))
                 .andExpect(jsonPath("$.rating", is(ratingRequest.getRating())))
                 .andDo(print());
@@ -59,8 +61,8 @@ class RatingIntegrationTests extends BaseTest {
     @Test
     void shouldGetAllRatings() throws Exception {
         List<Rating> ratingList = new ArrayList<>();
-        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest(), 0L));
-        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest(), 0L));
+        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest("userID-1"), 0L));
+        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest("userID-2"), 0L));
         ratingRepository.saveAll(ratingList);
 
         mockMvc.perform(get("/ratings"))
@@ -70,20 +72,30 @@ class RatingIntegrationTests extends BaseTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenSameUserRatesSameMatch() throws Exception {
+        List<Rating> ratingList = new ArrayList<>();
+        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest("userID"), 0L));
+        ratingList.add(dtoUtility.ratingRequestToRating(getRatingRequest("userID"), 0L));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+            ratingRepository.saveAll(ratingList);
+        });
+    }
+
+    @Test
     void shouldGetRatingById() throws Exception {
-        RatingRequest ratingRequest = getRatingRequest();
+        RatingRequest ratingRequest = getRatingRequest("userID");
         Rating savedRating = ratingRepository.save(dtoUtility.ratingRequestToRating(ratingRequest, 0L));
 
         mockMvc.perform(get("/ratings/{id}", savedRating.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId().intValue())))
+                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId())))
                 .andExpect(jsonPath("$.matchId", is(ratingRequest.getMatchId().intValue())))
                 .andExpect(jsonPath("$.rating", is(ratingRequest.getRating())))
                 .andDo(print());
     }
 
     @Test
-    void shouldReturnStatusNotFoundWhenGettingAllRatings() throws Exception {
+    void shouldReturnStatusNotFoundWhenGettingRatingById() throws Exception {
         mockMvc.perform(get("/ratings/{id}", 1L))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -91,19 +103,19 @@ class RatingIntegrationTests extends BaseTest {
 
     @Test
     void shouldUpdateRating() throws Exception {
-        RatingRequest ratingRequest = getRatingRequest();
+        RatingRequest ratingRequest = getRatingRequest("userID");
         Rating savedRating = ratingRepository.save(dtoUtility.ratingRequestToRating(ratingRequest, 0L));
-        RatingRequest updatedRatingRequest = getRatingRequest();
-        updatedRatingRequest.setUserId(11L);
-        updatedRatingRequest.setMatchId(12L);
+        RatingRequest updatedRatingRequest = getRatingRequest("userID-updated");
+        updatedRatingRequest.setMatchId(Long.MAX_VALUE);
         updatedRatingRequest.setRating(1);
         String updatedRatingRequestJSON = objectMapper.writeValueAsString(updatedRatingRequest);
 
         mockMvc.perform(put("/ratings/{id}", savedRating.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedRatingRequestJSON))
+                        .content(updatedRatingRequestJSON)
+                        .header("user-id", updatedRatingRequest.getUserId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId().intValue())))
+                .andExpect(jsonPath("$.userId", is(ratingRequest.getUserId())))
                 .andExpect(jsonPath("$.matchId", is(ratingRequest.getMatchId().intValue())))
                 .andExpect(jsonPath("$.rating", is(updatedRatingRequest.getRating())))
                 .andDo(print());
@@ -111,39 +123,58 @@ class RatingIntegrationTests extends BaseTest {
 
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingRating() throws Exception {
-        RatingRequest updatedRatingRequest = getRatingRequest();
-        updatedRatingRequest.setUserId(11L);
-        updatedRatingRequest.setMatchId(12L);
+        RatingRequest updatedRatingRequest = getRatingRequest("userID-updated");
+        updatedRatingRequest.setMatchId(Long.MAX_VALUE);
         updatedRatingRequest.setRating(1);
         String updatedRatingRequestJSON = objectMapper.writeValueAsString(updatedRatingRequest);
 
         mockMvc.perform(put("/ratings/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedRatingRequestJSON))
+                        .content(updatedRatingRequestJSON)
+                        .header("user-id", updatedRatingRequest.getUserId()))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
     @Test
     void shouldDeleteRating() throws Exception {
-        RatingRequest ratingRequest = getRatingRequest();
+        RatingRequest ratingRequest = getRatingRequest("userID");
         Rating savedRating = ratingRepository.save(dtoUtility.ratingRequestToRating(ratingRequest, 0L));
 
-        mockMvc.perform(delete("/ratings/{id}", savedRating.getId()))
+        mockMvc.perform(delete("/ratings/{id}", savedRating.getId())
+                        .header("user-id", ratingRequest.getUserId()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
 
     @Test
     void shouldReturnStatusNotFoundWhenDeletingRating() throws Exception {
-        mockMvc.perform(delete("/ratings/{id}", 1L))
+        mockMvc.perform(delete("/ratings/{id}", 1L)
+                        .header("user-id", "userID"))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
-    private RatingRequest getRatingRequest() {
+    @Test
+    void shouldReturnBadRequestWhenMissingHeader() throws Exception {
+        RatingRequest ratingRequest = getRatingRequest("userID");
+        Rating savedRating = ratingRepository.save(dtoUtility.ratingRequestToRating(ratingRequest, 0L));
+        String ratingRequestJSON = objectMapper.writeValueAsString(ratingRequest);
+        mockMvc.perform(post("/ratings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ratingRequestJSON))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(put("/ratings/{id}", savedRating.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ratingRequestJSON))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(delete("/ratings/{id}", savedRating.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    private RatingRequest getRatingRequest(String userId) {
         return RatingRequest.builder()
-                .userId(1L)
+                .userId(userId)
                 .matchId(2L)
                 .rating(5)
                 .build();

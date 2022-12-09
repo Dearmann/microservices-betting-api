@@ -6,7 +6,6 @@ import com.github.dearmann.commentservice.dto.DtoUtility;
 import com.github.dearmann.commentservice.dto.request.CommentRequest;
 import com.github.dearmann.commentservice.model.Comment;
 import com.github.dearmann.commentservice.repository.CommentRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,26 +40,10 @@ class CommentIntegrationTests extends BaseTest {
     }
 
     @Test
-    void shouldCreateComment() throws Exception {
-        CommentRequest commentRequest = getCommentRequest();
-        String commentRequestJSON = objectMapper.writeValueAsString(commentRequest);
-
-        mockMvc.perform(post("/comments")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(commentRequestJSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId", is(commentRequest.getUserId().intValue())))
-                .andExpect(jsonPath("$.matchId", is(commentRequest.getMatchId().intValue())))
-                .andExpect(jsonPath("$.message", is(commentRequest.getMessage())))
-                .andDo(print());
-        Assertions.assertEquals(1, commentRepository.findAll().size());
-    }
-
-    @Test
     void shouldGetAllComments() throws Exception {
         List<Comment> commentList = new ArrayList<>();
-        commentList.add(dtoUtility.commentRequestToComment(getCommentRequest(), 0L));
-        commentList.add(dtoUtility.commentRequestToComment(getCommentRequest(), 0L));
+        commentList.add(dtoUtility.commentRequestToComment(getCommentRequest("userID"), 0L));
+        commentList.add(dtoUtility.commentRequestToComment(getCommentRequest("userID"), 0L));
         commentRepository.saveAll(commentList);
 
         mockMvc.perform(get("/comments"))
@@ -71,19 +54,19 @@ class CommentIntegrationTests extends BaseTest {
 
     @Test
     void shouldGetCommentById() throws Exception {
-        CommentRequest commentRequest = getCommentRequest();
+        CommentRequest commentRequest = getCommentRequest("userID");
         Comment savedComment = commentRepository.save(dtoUtility.commentRequestToComment(commentRequest, 0L));
 
         mockMvc.perform(get("/comments/{id}", savedComment.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId", is(commentRequest.getUserId().intValue())))
+                .andExpect(jsonPath("$.userId", is(commentRequest.getUserId())))
                 .andExpect(jsonPath("$.matchId", is(commentRequest.getMatchId().intValue())))
                 .andExpect(jsonPath("$.message", is(commentRequest.getMessage())))
                 .andDo(print());
     }
 
     @Test
-    void shouldReturnStatusNotFoundWhenGettingAllComments() throws Exception {
+    void shouldReturnStatusNotFoundWhenGettingCommentById() throws Exception {
         mockMvc.perform(get("/comments/{id}", 1L))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -91,19 +74,19 @@ class CommentIntegrationTests extends BaseTest {
 
     @Test
     void shouldUpdateComment() throws Exception {
-        CommentRequest commentRequest = getCommentRequest();
+        CommentRequest commentRequest = getCommentRequest("userID");
         Comment savedComment = commentRepository.save(dtoUtility.commentRequestToComment(commentRequest, 0L));
-        CommentRequest updatedCommentRequest = getCommentRequest();
-        updatedCommentRequest.setUserId(11L);
-        updatedCommentRequest.setMatchId(12L);
+        CommentRequest updatedCommentRequest = getCommentRequest("userID-updated");
+        updatedCommentRequest.setMatchId(Long.MAX_VALUE);
         updatedCommentRequest.setMessage("Updated test comment.");
         String updatedCommentRequestJSON = objectMapper.writeValueAsString(updatedCommentRequest);
 
         mockMvc.perform(put("/comments/{id}", savedComment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedCommentRequestJSON))
+                        .content(updatedCommentRequestJSON)
+                        .header("user-id", updatedCommentRequest.getUserId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId", is(commentRequest.getUserId().intValue())))
+                .andExpect(jsonPath("$.userId", is(commentRequest.getUserId())))
                 .andExpect(jsonPath("$.matchId", is(commentRequest.getMatchId().intValue())))
                 .andExpect(jsonPath("$.message", is(updatedCommentRequest.getMessage())))
                 .andDo(print());
@@ -111,39 +94,58 @@ class CommentIntegrationTests extends BaseTest {
 
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingComment() throws Exception {
-        CommentRequest updatedCommentRequest = getCommentRequest();
-        updatedCommentRequest.setUserId(11L);
-        updatedCommentRequest.setMatchId(12L);
+        CommentRequest updatedCommentRequest = getCommentRequest("userID-updated");
+        updatedCommentRequest.setMatchId(Long.MAX_VALUE);
         updatedCommentRequest.setMessage("Updated test comment.");
         String updatedCommentRequestJSON = objectMapper.writeValueAsString(updatedCommentRequest);
 
         mockMvc.perform(put("/comments/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedCommentRequestJSON))
+                        .content(updatedCommentRequestJSON)
+                        .header("user-id", updatedCommentRequest.getUserId()))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
     @Test
     void shouldDeleteComment() throws Exception {
-        CommentRequest commentRequest = getCommentRequest();
+        CommentRequest commentRequest = getCommentRequest("userID");
         Comment savedComment = commentRepository.save(dtoUtility.commentRequestToComment(commentRequest, 0L));
 
-        mockMvc.perform(delete("/comments/{id}", savedComment.getId()))
+        mockMvc.perform(delete("/comments/{id}", savedComment.getId())
+                        .header("user-id", commentRequest.getUserId()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
 
     @Test
     void shouldReturnStatusNotFoundWhenDeletingComment() throws Exception {
-        mockMvc.perform(delete("/comments/{id}", 1L))
+        mockMvc.perform(delete("/comments/{id}", 1L)
+                        .header("user-id", "userID"))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
-    private CommentRequest getCommentRequest() {
+    @Test
+    void shouldReturnBadRequestWhenMissingHeader() throws Exception {
+        CommentRequest commentRequest = getCommentRequest("userID");
+        Comment savedComment = commentRepository.save(dtoUtility.commentRequestToComment(commentRequest, 0L));
+        String commentRequestJSON = objectMapper.writeValueAsString(commentRequest);
+        mockMvc.perform(post("/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commentRequestJSON))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(put("/comments/{id}", savedComment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commentRequestJSON))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(delete("/comments/{id}", savedComment.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    private CommentRequest getCommentRequest(String userId) {
         return CommentRequest.builder()
-                .userId(1L)
+                .userId(userId)
                 .matchId(2L)
                 .message("Test comment.")
                 .build();

@@ -43,7 +43,7 @@ class GameIntegrationTests extends BaseTest {
 
     @Test
     void shouldCreateGame() throws Exception {
-        GameRequest gameRequest = getGameRequest();
+        GameRequest gameRequest = getGameRequest("Game");
         String gameRequestJSON = objectMapper.writeValueAsString(gameRequest);
 
         mockMvc.perform(post("/games")
@@ -51,6 +51,7 @@ class GameIntegrationTests extends BaseTest {
                         .content(gameRequestJSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(gameRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(gameRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.eventIds", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.teamIds", is(Collections.emptyList())))
                 .andDo(print());
@@ -60,8 +61,8 @@ class GameIntegrationTests extends BaseTest {
     @Test
     void shouldGetAllGames() throws Exception {
         List<Game> gameList = new ArrayList<>();
-        gameList.add(dtoUtility.gameRequestToGame(getGameRequest(), 0L));
-        gameList.add(dtoUtility.gameRequestToGame(getGameRequest(), 0L));
+        gameList.add(dtoUtility.gameRequestToGame(getGameRequest("Game-1"), 0L));
+        gameList.add(dtoUtility.gameRequestToGame(getGameRequest("Game-2"), 0L));
         gameRepository.saveAll(gameList);
 
         mockMvc.perform(get("/games"))
@@ -72,19 +73,20 @@ class GameIntegrationTests extends BaseTest {
 
     @Test
     void shouldGetGameById() throws Exception {
-        GameRequest gameRequest = getGameRequest();
+        GameRequest gameRequest = getGameRequest("Game");
         Game savedGame = gameRepository.save(dtoUtility.gameRequestToGame(gameRequest, 0L));
 
         mockMvc.perform(get("/games/{id}", savedGame.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(gameRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(gameRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.eventIds", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.teamIds", is(Collections.emptyList())))
                 .andDo(print());
     }
 
     @Test
-    void shouldReturnStatusNotFoundWhenGettingAllGames() throws Exception {
+    void shouldReturnStatusNotFoundWhenGettingGameById() throws Exception {
         mockMvc.perform(get("/games/{id}", 1L))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -92,10 +94,9 @@ class GameIntegrationTests extends BaseTest {
 
     @Test
     void shouldUpdateGame() throws Exception {
-        GameRequest gameRequest = getGameRequest();
+        GameRequest gameRequest = getGameRequest("Game");
         Game savedGame = gameRepository.save(dtoUtility.gameRequestToGame(gameRequest, 0L));
-        GameRequest updatedGameRequest = getGameRequest();
-        updatedGameRequest.setName("Updated test game");
+        GameRequest updatedGameRequest = getGameRequest("Game-updated");
         String updatedGameRequestJSON = objectMapper.writeValueAsString(updatedGameRequest);
 
         mockMvc.perform(put("/games/{id}", savedGame.getId())
@@ -103,6 +104,7 @@ class GameIntegrationTests extends BaseTest {
                         .content(updatedGameRequestJSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(updatedGameRequest.getName())))
+                .andExpect(jsonPath("$.logoUrl", is(updatedGameRequest.getLogoUrl())))
                 .andExpect(jsonPath("$.eventIds", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.teamIds", is(Collections.emptyList())))
                 .andDo(print());
@@ -110,8 +112,7 @@ class GameIntegrationTests extends BaseTest {
 
     @Test
     void shouldReturnStatusNotFoundWhenUpdatingGame() throws Exception {
-        GameRequest updatedGameRequest = getGameRequest();
-        updatedGameRequest.setName("Updated test game");
+        GameRequest updatedGameRequest = getGameRequest("Game-updated");
         String updatedGameRequestJSON = objectMapper.writeValueAsString(updatedGameRequest);
 
         mockMvc.perform(put("/games/{id}", 1L)
@@ -123,7 +124,7 @@ class GameIntegrationTests extends BaseTest {
 
     @Test
     void shouldDeleteGame() throws Exception {
-        GameRequest gameRequest = getGameRequest();
+        GameRequest gameRequest = getGameRequest("Game");
         Game savedGame = gameRepository.save(dtoUtility.gameRequestToGame(gameRequest, 0L));
 
         mockMvc.perform(delete("/games/{id}", savedGame.getId()))
@@ -138,9 +139,9 @@ class GameIntegrationTests extends BaseTest {
                 .andDo(print());
     }
 
-    private GameRequest getGameRequest() {
+    private GameRequest getGameRequest(String gameName) {
         return GameRequest.builder()
-                .name("League of Legends")
+                .name(gameName)
                 .build();
     }
 }
