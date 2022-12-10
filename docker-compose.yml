@@ -61,9 +61,11 @@ services:
 
   match-service:
     container_name: match-service
-    image: dearmann/match-service:1.0
+    image: dearmann/match-service:1.1
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
     depends_on:
       - mysql
     restart: unless-stopped
@@ -120,7 +122,7 @@ services:
 
   frontend:
     container_name: betting-app-ui
-    image: dearmann/betting-app-ui:1.0
+    image: dearmann/betting-app-ui:1.1
     ports:
       - 80:80
     environment: 
