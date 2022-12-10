@@ -2,10 +2,14 @@ package com.github.dearmann.matchservice.controller;
 
 import com.github.dearmann.matchservice.dto.request.TeamRequest;
 import com.github.dearmann.matchservice.dto.response.TeamResponse;
+import com.github.dearmann.matchservice.service.FileService;
 import com.github.dearmann.matchservice.service.TeamService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,6 +20,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final FileService fileService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,6 +51,22 @@ public class TeamController {
     @DeleteMapping("/{id}")
     public void deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);
+    }
+
+    @GetMapping("/logo")
+    public List<String> listObjectsUrls() {
+        return fileService.listObjectsUrls("betting-team-logo");
+    }
+
+    @GetMapping("/logo/{fileName}")
+    public ResponseEntity<InputStreamResource> downloadObject(@PathVariable String fileName) {
+        return fileService.downloadObject(fileName, "betting-team-logo");
+    }
+
+    @PostMapping("/logo")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String uploadObject(@RequestParam("file") MultipartFile file) {
+        return fileService.uploadObject(file, "betting-team-logo");
     }
 
 }
