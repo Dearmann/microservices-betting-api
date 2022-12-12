@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-configmap
+data:
+  kc-db: mysql
+  kc-db-schema: keycloak

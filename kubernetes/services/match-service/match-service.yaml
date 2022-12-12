@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: match-service
+  labels:
+    app: match-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: match-service
+  template:
+    metadata:
+      labels:
+        app: match-service
+    spec:
+      containers:
+        - name: match-service
+          image: dearmann/match-service:1.2
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: match-service
+  labels:
+    app: match-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30004
+  selector:
+    app: match-service

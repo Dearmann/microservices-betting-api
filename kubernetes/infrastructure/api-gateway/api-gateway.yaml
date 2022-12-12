@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
+              value: ' TRACE'
+          image: dearmann/api-gateway:1.0
+          name: api-gateway
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway-service
+  labels:
+    app: api-gateway
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30009
+  selector:
+    app: api-gateway

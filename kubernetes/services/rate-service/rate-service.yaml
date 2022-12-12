@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rate-service
+  labels:
+    app: rate-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rate-service
+  template:
+    metadata:
+      labels:
+        app: rate-service
+    spec:
+      containers:
+        - name: rate-service
+          image: dearmann/rate-service:1.1
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rate-service
+  labels:
+    app: rate-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+      nodePort: 30007
+  selector:
+    app: rate-service

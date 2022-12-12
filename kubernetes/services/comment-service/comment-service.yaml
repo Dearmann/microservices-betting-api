@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-service
+  labels:
+    app: comment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comment-service
+  template:
+    metadata:
+      labels:
+        app: comment-service
+    spec:
+      containers:
+        - name: comment-service
+          image: dearmann/comment-service:1.1
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-service
+  labels:
+    app: comment-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+      nodePort: 30006
+  selector:
+    app: comment-service
