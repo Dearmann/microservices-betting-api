@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: dearmann/api-gateway:1.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
+              value: TRACE
+            - name: BET_SERVICE
+              value: bet-service
+            - name: COMMENT_SERVICE
+              value: comment-service
+            - name: RATE_SERVICE
+              value: rate-service
+            - name: MATCH_SERVICE
+              value: match-service
+            - name: USER_SERVICE
+              value: user-service
+            - name: KEYCLOAK_SERVICE
+              value: auth.me
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: api-gateway

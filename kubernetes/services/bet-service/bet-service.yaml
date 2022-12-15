@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bet-service
+  labels:
+    app: bet-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bet-service
+  template:
+    metadata:
+      labels:
+        app: bet-service
+    spec:
+      containers:
+        - name: bet-service
+          image: dearmann/bet-service:1.2
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              value: betdb
+            - name: DB_USERNAME
+              value: bet
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-service-password
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bet-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8082
+  selector:
+    app: bet-service

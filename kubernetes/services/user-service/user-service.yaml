@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: dearmann/user-service:1.2
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-db-schema
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+            - name: KEYCLOAK_URL
+              value: http://keycloak:80
+            - name: KEYCLOAK_REALM
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-configmap
+                  key: keycloak-realm
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-configmap
+                  key: keycloak-client-backend
+            - name: KEYCLOAK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-secret
+            - name: KEYCLOAK_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-user
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-password
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8085
+  selector:
+    app: user-service

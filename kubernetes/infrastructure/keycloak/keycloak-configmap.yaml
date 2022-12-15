@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-configmap
+data:
+  keycloak-realm: betting-app
+  keycloak-client-backend: backend
+  keycloak-client-frontend: frontend

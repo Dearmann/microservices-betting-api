@@ -1,0 +1,37 @@
+eureka:
+  client:
+    enabled: false
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: bet-service
+          uri: http://${BET_SERVICE}
+          predicates:
+            - Path=/bets/**
+        - id: comment-service
+          uri: http://${COMMENT_SERVICE}
+          predicates:
+            - Path=/comments/**
+        - id: rate-service
+          uri: http://${RATE_SERVICE}
+          predicates:
+            - Path=/ratings/**
+        - id: match-service
+          uri: http://${MATCH_SERVICE}
+          predicates:
+            - Path=/games/**,/events/**,/teams/**,/matches/**
+        - id: user-service
+          uri: http://${USER_SERVICE}
+          predicates:
+            - Path=/users/**,/keycloak/**
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins: "*"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${KEYCLOAK_SERVICE}/realms/betting-app

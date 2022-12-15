@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:20.0.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KEYCLOAK_USER
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-user
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-password
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: keycloak-admin-password
+            - name: KC_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-name
+            - name: KC_DB_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-db-schema
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-user
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+            - name: KC_DB_URL
+              value: jdbc:mysql://mysql:3306/keycloak
+            - name: KC_HOSTNAME
+              value: auth.me
+          args:
+            - start-dev
+            - --import-realm
+          volumeMounts:
+            - mountPath: /opt/keycloak/data/import/
+              name: betting-app-realm
+      restartPolicy: Always
+      volumes:
+        - name: betting-app-realm
+          configMap:
+            name: betting-app-realm-import
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app: keycloak

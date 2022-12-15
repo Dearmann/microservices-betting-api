@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  mysql-name: mysql
+  mysql-hostname: mysql:3306
+  mysql-db-schema: keycloak

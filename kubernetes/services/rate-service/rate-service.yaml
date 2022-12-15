@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rate-service
+  labels:
+    app: rate-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rate-service
+  template:
+    metadata:
+      labels:
+        app: rate-service
+    spec:
+      containers:
+        - name: rate-service
+          image: dearmann/rate-service:1.2
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              value: ratedb
+            - name: DB_USERNAME
+              value: rate
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-service-password
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rate-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8084
+  selector:
+    app: rate-service
