@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: keycloak-configmap
 data:
-  kc-db: mysql
-  kc-db-schema: keycloak
+  keycloak-realm: betting-app
+  keycloak-client-backend: backend
+  keycloak-client-frontend: frontend

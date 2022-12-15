@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: betting-app-ui
+  labels:
+    app: betting-app-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: betting-app-ui
+  template:
+    metadata:
+      labels:
+        app: betting-app-ui
+    spec:
+      containers:
+        - name: betting-app-ui
+          image: dearmann/betting-app-ui:1.1
+          ports:
+            - containerPort: 80
+          env:
+            - name: KEYCLOAK_URL
+              value: http://auth.me
+            - name: KEYCLOAK_REALM
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-configmap
+                  key: keycloak-realm
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: keycloak-configmap
+                  key: keycloak-client-frontend
+            - name: BACKEND_BASE_PATH
+              value: http://api-gateway:8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: betting-app-ui
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: betting-app-ui

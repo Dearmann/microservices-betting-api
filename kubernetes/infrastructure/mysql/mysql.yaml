@@ -1,16 +1,15 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mysql
   labels:
     app: mysql
 spec:
+  serviceName: mysql
   replicas: 1
   selector:
     matchLabels:
       app: mysql
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -32,7 +31,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: mysql-configmap
-                  key: mysql-database
+                  key: mysql-db-schema
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
@@ -48,30 +47,16 @@ spec:
           volumeMounts:
             - name: mysql-initdb
               mountPath: /docker-entrypoint-initdb.d
-            - name: mysql-claim0
+            - name: mysql-volume
               mountPath: /var/lib/mysql
       volumes:
         - name: mysql-initdb
           configMap:
             name: mysql-initdb-script
-        - name: mysql-claim0
+        - name: mysql-volume
           persistentVolumeClaim:
-            claimName: mysql-claim0
+            claimName: mysql-pvc
       restartPolicy: Always
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  creationTimestamp: null
-  name: mysql-claim0
-  labels:
-    app: mysql-claim0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
 ---
 apiVersion: v1
 kind: Service
@@ -85,5 +70,18 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-      nodePort: 30002
+      nodePort: 30000
       name: mysql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  labels:
+    app: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

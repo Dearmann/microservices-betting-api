@@ -16,26 +16,36 @@ spec:
     spec:
       containers:
         - name: comment-service
-          image: dearmann/comment-service:1.1
+          image: dearmann/comment-service:1.2
           ports:
             - containerPort: 8083
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: docker
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              value: commentdb
+            - name: DB_USERNAME
+              value: comment
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-service-password
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: comment-service
-  labels:
-    app: comment-service
 spec:
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8083
+      port: 80
       targetPort: 8083
-      nodePort: 30006
   selector:
     app: comment-service

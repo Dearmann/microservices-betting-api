@@ -16,26 +16,46 @@ spec:
     spec:
       containers:
         - name: match-service
-          image: dearmann/match-service:1.2
+          image: dearmann/match-service:1.3
           ports:
             - containerPort: 8081
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: docker
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              value: matchdb
+            - name: DB_USERNAME
+              value: match
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-service-password
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: aws-access-key
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: aws-secret-key
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: match-service
-  labels:
-    app: match-service
 spec:
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8081
+      port: 80
       targetPort: 8081
-      nodePort: 30004
   selector:
     app: match-service

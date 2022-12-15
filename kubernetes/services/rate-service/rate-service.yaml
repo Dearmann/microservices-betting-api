@@ -16,26 +16,36 @@ spec:
     spec:
       containers:
         - name: rate-service
-          image: dearmann/rate-service:1.1
+          image: dearmann/rate-service:1.2
           ports:
             - containerPort: 8084
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: docker
+              value: k8s
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: mysql-hostname
+            - name: DB_NAME
+              value: ratedb
+            - name: DB_USERNAME
+              value: rate
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-service-password
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: rate-service
-  labels:
-    app: rate-service
 spec:
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8084
+      port: 80
       targetPort: 8084
-      nodePort: 30007
   selector:
     app: rate-service

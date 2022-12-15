@@ -9,8 +9,6 @@ spec:
   selector:
     matchLabels:
       app: keycloak
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -45,13 +43,13 @@ spec:
             - name: KC_DB
               valueFrom:
                 configMapKeyRef:
-                  name: keycloak-configmap
-                  key: kc-db
+                  name: mysql-configmap
+                  key: mysql-name
             - name: KC_DB_SCHEMA
               valueFrom:
                 configMapKeyRef:
-                  name: keycloak-configmap
-                  key: kc-db-schema
+                  name: mysql-configmap
+                  key: mysql-db-schema
             - name: KC_DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -64,44 +62,28 @@ spec:
                   key: mysql-password
             - name: KC_DB_URL
               value: jdbc:mysql://mysql:3306/keycloak
+            - name: KC_HOSTNAME
+              value: auth.me
           args:
             - start-dev
             - --import-realm
           volumeMounts:
             - mountPath: /opt/keycloak/data/import/
-              name: keycloak-claim0
+              name: betting-app-realm
       restartPolicy: Always
       volumes:
-        - name: keycloak-claim0
-          persistentVolumeClaim:
-            claimName: keycloak-claim0
+        - name: betting-app-realm
+          configMap:
+            name: betting-app-realm-import
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
-  labels:
-    app: keycloak
 spec:
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
-      nodePort: 30001
   selector:
     app: keycloak
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  creationTimestamp: null
-  name: keycloak-claim0
-  labels:
-    app: keycloak-claim0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
