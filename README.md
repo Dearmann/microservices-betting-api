@@ -1,4 +1,21 @@
 # microservices-betting-api
 Betting API for e-sports games made with Spring Boot in microservices architecture.
 
-To run docker-compose you need "127.0.0.1 keycloak" in hosts file.
+# Run with Kubernetes
+To run with Kubernetes locally you need Minikube:
+ - Start Minikube cluster: `minikube start --cpus 4 --memory 8000 --vm-driver=hyperv`
+ - Get Minikube IP: `minikube ip`
+ - Add entries to hosts file for Ingress configuration as follows:
+    ```
+    <MINIKUBE_IP> auth.me
+    <MINIKUBE_IP> betting-esport.com
+    ```
+- Enable ingress-nginx Ingress controller implementation: `minikube addons enable ingress`
+- Start k8s components: `kubectl apply -f .\kubernetes --recursive`
+
+To get access to Minikube cluster from localhost: 
+`kubectl port-forward --address 127.0.0.1 service/betting-app-ui 8888:80` (HOST_PORT:POD_PORT)
+
+# Run with Docker
+ - Add entry to hosts file `'127.0.0.1 keycloak'`
+ - Run: `docker-compose up -d`
