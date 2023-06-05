@@ -8,7 +8,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/betting-app
+          issuer-uri: http://${KEYCLOAK_SERVICE:keycloak:8080}/realms/betting-app
   cloud:
     gateway:
       globalcors:
