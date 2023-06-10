@@ -13,8 +13,11 @@ To run with Kubernetes locally you need Minikube:
 - Enable ingress-nginx Ingress controller implementation: `minikube addons enable ingress`
 - Start k8s components: `kubectl apply -f .\kubernetes --recursive`
 
-To get access to Minikube cluster from localhost: 
-`kubectl port-forward --address 127.0.0.1 service/betting-app-ui 8888:80` (HOST_PORT:POD_PORT)
+To access k8s component from local IP address: `kubectl port-forward --address <LOCAL_IP> <COMPONENT/NAME> <HOST_PORT>:<COMPONENT_PORT>`
+
+Example:
+- `kubectl port-forward --address 192.168.1.111 service/keycloak 8080:80`
+- `kubectl port-forward --address 192.168.1.111 service/betting-app-ui 80:80`
 
 # Run with Docker
  - Add entry to hosts file `'127.0.0.1 keycloak'`
