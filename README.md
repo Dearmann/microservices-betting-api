@@ -17,7 +17,7 @@ To run with Kubernetes locally you need Minikube:
         - Get Minikube IP: `minikube ip`
         - ```
           <MINIKUBE_IP> auth.me
-          <MINIKUBE_IP> betting-esport.com
+          <MINIKUBE_IP> betting-esport.me
           ```
 - Start k8s components: `kubectl apply -f .\kubernetes --recursive`
 
